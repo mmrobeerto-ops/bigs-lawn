@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#123d24">
+<script type="application/ld+json">{{JSONLD}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<!--#SPRITE-->
+
+<!--#TOP-->
+
+<main id="top">
+<section class="hero" id="hero" style="padding:0"><div class="hero-bg" id="hero-bg"></div><div class="wrap">
+  <div>
+    <div class="eyebrow" style="color:var(--sun)" data-s="zone"></div>
+    <h1 id="headline"></h1>
+    <p class="lead" data-s="about"></p>
+    <div class="ctas">
+      <a class="btn sun" href="#book">Book Online</a>
+      <a class="btn line" data-sms hidden><svg class="ico"><use href="#i-msg"/></svg>Text Us</a>
+      <a class="btn wa" data-wa hidden target="_blank" rel="noopener"><svg class="ico fill"><use href="#i-wa"/></svg>WhatsApp</a>
+      <a class="btn line" data-tel hidden><svg class="ico"><use href="#i-phone"/></svg>Call Now</a>
+    </div>
+    <div class="badges" id="badges"></div>
+  </div>
+  <div class="quote" id="quick">
+    <h2>Price estimate</h2>
+    <div class="sub">A rough price for your yard. We confirm the exact price before we start.</div>
+    <label class="f" for="q-pkg">Service</label><select id="q-pkg" data-k="package_id"></select>
+    <label class="f" for="q-size">Lot size</label><select id="q-size" data-k="size"></select>
+    <div class="row2">
+      <div><label class="f" for="q-cond">Condition</label><select id="q-cond" data-k="condition"></select></div>
+      <div id="q-freq-wrap"><label class="f" for="q-freq">How often</label><select id="q-freq" data-k="frequency"></select></div>
+    </div>
+    <div class="price-box"><div><small>Estimated price</small><span class="amt" data-est>—</span></div><small data-est-unit></small></div>
+    <a class="btn dark block" href="#book">Book this service</a>
+  </div>
+</div></section>
+
+<section id="services"><div class="wrap">
+  <div class="head"><div><div class="eyebrow">What we do</div><h2>Services &amp; Pricing</h2></div>
+    <p>Starting prices for a standard 1/4-acre Willamette Valley lot. Larger or overgrown yards cost more. We give you the exact price before any work starts.</p></div>
+  <div class="services" id="svcs"></div>
+  <div class="addons" id="addons-box" hidden><h3>Add-ons</h3><div class="addon-list" id="addons"></div></div>
+</div></section>
+
+<section id="plans" style="padding-top:0" hidden><div class="wrap">
+  <div class="head"><div><div class="eyebrow">Recurring lawn plans</div><h2>Save with a schedule</h2></div>
+    <p>The more often we come, the less each visit costs. No contract. You can pause or cancel anytime.</p></div>
+  <div class="plans" id="plan-list"></div>
+</div></section>
+
+<section class="work" id="work"><div class="wrap">
+  <div class="head"><div><div class="eyebrow">Our work</div><h2>Before &amp; After</h2></div><p>Real jobs from our crew. Tap a photo to see it full-size.</p></div>
+  <div class="chips" id="chips"></div>
+  <div class="gallery" id="gallery"></div>
+</div></section>
+
+<section id="about" class="alt"><div class="wrap about">
+  <div><div class="eyebrow">About us</div><h2 class="cond" style="font-size:clamp(40px,5.4vw,64px);text-transform:uppercase;margin:6px 0 14px">Meet <span data-s="business_name"></span></h2>
+    <p id="about-long"></p><p id="owner" style="font-weight:700"></p></div>
+  <div><div class="values" id="about-values"></div>
+    <div class="about-ctas"><a class="btn sun block" href="#book">Get a Free Quote →</a><a class="btn line block" data-tel hidden>Call <span data-s="phone_display"></span></a></div></div>
+</div></section>
+
+<section id="reviews" hidden></section>
+
+
+<section id="book"><div class="wrap">
+  <div class="head"><div><div class="eyebrow">Book online</div><h2>Schedule your service</h2></div><p data-s="hours_text"></p></div>
+  <div class="booking">
+    <div class="panel">
+      <h3><span>1</span>Your yard</h3>
+      <label class="f" for="b-pkg">Service</label><select id="b-pkg" data-k="package_id"></select>
+      <label class="f" for="b-size">Lot size</label><select id="b-size" data-k="size"></select>
+      <label class="f">Condition</label><div class="seg" id="b-cond"></div>
+      <div id="b-freq-wrap"><label class="f">How often</label><div class="seg" id="b-freq"></div></div>
+      <div id="b-add-wrap"><label class="f">Add-ons</label><div class="checks" id="b-add"></div></div>
+      <div class="price-box"><div><small>Your estimate</small><span class="amt" data-est>—</span></div><small data-est-unit></small></div>
+      <div class="fine" id="b-first"></div>
+    </div>
+    <div class="panel" id="form-panel">
+      <h3><span>2</span>Pick a day</h3>
+      <div class="cal-h"><button type="button" id="prev" aria-label="Previous month">‹</button><b id="month"></b><button type="button" id="next" aria-label="Next month">›</button></div>
+      <div class="cal" id="cal"></div>
+      <div class="legend"><span><i style="background:var(--soft)"></i>Available</span><span><i style="background:var(--sun)"></i>Last spot</span><span><i style="background:var(--forest)"></i>Selected</span></div>
+      <div class="picked" id="picked">Select an available day above.</div>
+      <h3 style="margin-top:22px"><span>3</span>Your info</h3>
+      <form id="bform" novalidate>
+        <div class="row2">
+          <div><label class="f" for="f-name">Full name</label><input id="f-name" name="name" autocomplete="name" required></div>
+          <div><label class="f" for="f-phone">Mobile phone</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required></div>
+        </div>
+        <div class="row2">
+          <div><label class="f" for="f-addr">Street address</label><input id="f-addr" name="address" autocomplete="street-address" required></div>
+          <div><label class="f" for="f-zip">ZIP code</label><input id="f-zip" name="zip" autocomplete="postal-code" inputmode="numeric" maxlength="10"><div id="zipnote"></div></div>
+        </div>
+        <label class="f" for="f-email">Email (optional)</label><input id="f-email" name="email" type="email" autocomplete="email">
+        <label class="f">Best way to reach you</label>
+        <div class="seg"><label><input type="radio" name="contact_pref" value="text" checked><span>Text</span></label><label><input type="radio" name="contact_pref" value="call"><span>Call</span></label><label><input type="radio" name="contact_pref" value="whatsapp"><span>WhatsApp</span></label><label><input type="radio" name="contact_pref" value="email"><span>Email</span></label></div>
+        <label class="f" for="f-notes">Anything we should know?</label><textarea id="f-notes" name="notes" placeholder="Gate code, dogs in the yard, debris to haul away…"></textarea>
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn sun block" style="margin-top:16px" id="send">Request Booking</button>
+        <div class="err" id="err" role="alert"></div>
+        <div class="fine">No payment now. You pay after the job is done · <span data-s="payments_text"></span></div>
+      </form>
+    </div>
+  </div>
+</div></section>
+
+<section id="area" style="padding-top:0"><div class="wrap area">
+  <div class="panel"><div class="eyebrow">Service area</div><h2 class="cond" style="font-size:44px;text-transform:uppercase;margin:6px 0 8px">Do we serve you?</h2>
+    <p class="muted" data-s="zone"></p>
+    <div class="zipbox"><input id="zipcheck" placeholder="Enter ZIP" inputmode="numeric" maxlength="10" aria-label="ZIP code"><button class="btn dark" id="zipbtn" type="button">Check</button></div>
+    <div id="zipresult"></div><div class="ziplist" id="ziplist"></div>
+    <div class="area-cities" id="area-cities"></div>
+    <div class="area-contact"><b>Not sure if we cover your street?</b><span class="muted">Call or text <a data-tel hidden><span data-s="phone_display"></span></a> · <span data-s="hours_text"></span></span></div></div>
+  <div id="faq"><div class="eyebrow">FAQ</div><h2 class="cond" style="font-size:44px;text-transform:uppercase;margin:6px 0 14px">Common questions</h2><div id="faq-list"></div></div>
+</div></section>
+
+<div class="cta-band"><div class="wrap"><h2>Need help with your yard?</h2>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn dark" href="#book">Request a free estimate</a><a class="btn line" data-tel hidden><svg class="ico"><use href="#i-phone"/></svg><span data-s="phone_display"></span></a></div></div></div>
+</main>
+
+<!--#BOTTOM-->
+
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo"><img alt=""></div>
+
+<script src="/assets/site.js"></script>
+<script>
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const ICONS = ["i-mower", "i-rake", "i-tree", "i-sprout"];
+let site, days = [], view, selected = null, est = {package_id: null, size: 1, condition: 0, frequency: 0, addon_ids: []}, lastEst = null;
+const money = c => (site.settings.currency_symbol || "$") + (c % 100 ? (c / 100).toFixed(2) : (c / 100).toLocaleString("en-US"));
+const pkgById = id => site.packages.find(p => p.id === +id);
+
+function renderStatic() {
+  const s = site.settings;
+  $$("[data-s]").forEach(el => el.textContent = s[el.dataset.s] || "");
+  const words = (s.tagline || "").trim().split(" ");
+  $("#headline").innerHTML = words.length > 2 ? esc(words.slice(0, -2).join(" ")) + " <em>" + esc(words.slice(-2).join(" ")) + "</em>" : esc(s.tagline);
+  if (s.promo_text) { $("#promo").textContent = s.promo_text; $("#promo").hidden = false; }
+  $$("[data-tel]").forEach(a => { if (s.tel_link) { a.href = s.tel_link; a.hidden = false; } else a.style.display = "none"; });
+  $$("[data-sms]").forEach(a => { const l = s.sms_link || s.whatsapp_link; if (l) { a.href = l; a.hidden = false; if (!s.sms_link) a.lastChild.textContent = "WhatsApp"; } else a.style.display = "none"; });
+  $("#badges").innerHTML = s.trust_badges.map(b => `<span class="badge"><svg class="ico"><use href="#i-shield"/></svg>${esc(b)}</span>`).join("");
+  const c = [];
+  if (s.phone_display) c.push(`<a href="${esc(s.tel_link)}">${esc(s.phone_display)}</a>`);
+  if (s.sms_link) c.push(`<a href="${esc(s.sms_link)}">Text us</a>`);
+  if (s.whatsapp_link) c.push(`<a href="${esc(s.whatsapp_link)}" target="_blank" rel="noopener">WhatsApp</a>`);
+  if (s.email) c.push(`<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`);
+  $("#contact").innerHTML = c.join("<br>");
+  $("#social").innerHTML = [s.facebook && `<a href="${esc(s.facebook)}" target="_blank" rel="noopener">Facebook</a>`, s.instagram && `<a href="${esc(s.instagram)}" target="_blank" rel="noopener">Instagram</a>`, s.google_review_url && `<a href="${esc(s.google_review_url)}" target="_blank" rel="noopener">Google Reviews</a>`].filter(Boolean).join(" · ");
+
+  // servicios
+  $("#svcs").innerHTML = site.packages.map((p, i) => `<article class="svc ${p.highlight ? "hl" : ""}">
+    ${p.highlight ? `<span class="tag">Most popular</span>` : ""}
+    <div class="icon"><svg class="ico"><use href="#${ICONS[i % ICONS.length]}"/></svg></div>
+    <h3>${esc(p.name)}</h3><div class="desc">${esc(p.description)}</div>
+    <div>${p.price_cents ? `<span class="from">Starting at</span><br><span class="amt">${money(p.price_cents)}</span><span class="unit">${esc(p.price_note.replace(/^from\s*/i, ""))}</span>` : `<span class="amt" style="font-size:34px">Free quote</span>`}</div>
+    <ul>${p.features.slice(0, 3).map(f => `<li><svg class="ico"><use href="#i-check"/></svg>${esc(f)}</li>`).join("")}</ul>
+    <a class="btn ${p.highlight ? "sun" : "line"} block" href="/services/${p.slug}/">View service</a></article>`).join("");
+  $$("[data-pick]").forEach(b => b.onclick = () => setEst({package_id: +b.dataset.pick}));
+  if (site.addons.length) { $("#addons-box").hidden = false; $("#addons").innerHTML = site.addons.map(a => `<div><span>${esc(a.name)}</span><b>+${money(a.price_cents)}${a.unit_note ? ` <span class="muted" style="font-weight:500">${esc(a.unit_note)}</span>` : ""}</b></div>`).join(""); }
+
+  // planes recurrentes (ahorro frente a una sola vez)
+  const rec = site.packages.find(p => p.recurring && p.price_cents);
+  const fr = site.estimator.est_frequencies, one = fr.find(f => /one/i.test(f.label)) || fr[fr.length - 1];
+  if (rec) {
+    $("#plans").hidden = false;
+    $("#plan-list").innerHTML = fr.map(f => { const save = Math.round((1 - f.mult / one.mult) * 100);
+      return `<div class="plan"><b>${esc(f.label)}</b><div class="muted">${esc(rec.name)} from <strong style="color:var(--ink)">${money(Math.round(rec.price_cents * f.mult / 500) * 500)}</strong> / visit</div>${save > 0 ? `<span class="save">Save ${save}%</span>` : `<span class="save" style="background:transparent;padding-left:0">No commitment</span>`}</div>`; }).join("");
+  }
+
+  // reseñas
+  renderReviews($("#reviews"), site);
+
+  if (s.hero_url) { $("#hero").classList.add("has-photo"); $("#hero-bg").style.backgroundImage = `url("${s.hero_url.replace(/"/g, "")}")`; }
+  // about
+  $("#about-long").textContent = s.about_long || s.about || "";
+  $("#owner").textContent = s.owner_name ? "— " + s.owner_name + ", owner" : "";
+  $("#about-values").innerHTML = (s.about_values.length ? s.about_values : s.trust_badges).map(v => `<div class="value">${esc(v)}</div>`).join("");
+  // faq + zonas
+  $("#faq-list").innerHTML = site.faqs.map(f => `<details><summary>${esc(f.question)}</summary><p>${esc(f.answer)}</p></details>`).join("");
+  $("#ziplist").innerHTML = s.zip_codes.map(z => `<span>${esc(z)}</span>`).join("");
+  $("#area-cities").innerHTML = s.area_cities.map(c => `<span>${esc(c)}</span>`).join("");
+
+  // selects del cotizador
+  const opts = (list, lab = x => x.label) => list.map((x, i) => `<option value="${i}">${esc(lab(x))}</option>`).join("");
+  const pk = site.packages.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join("");
+  ["#q-pkg", "#b-pkg"].forEach(s => $(s).innerHTML = pk);
+  ["#q-size", "#b-size"].forEach(s => $(s).innerHTML = opts(site.estimator.est_sizes));
+  $("#q-cond").innerHTML = opts(site.estimator.est_conditions);
+  $("#q-freq").innerHTML = opts(fr);
+  const seg = (name, list) => list.map((x, i) => `<label><input type="radio" name="${name}" value="${i}"><span>${esc(x.label.replace(/\s*\(.*\)/, "").replace(/ \/.*/, ""))}</span></label>`).join("");
+  $("#b-cond").innerHTML = seg("cond", site.estimator.est_conditions);
+  $("#b-freq").innerHTML = seg("freq", fr);
+  $("#b-add").innerHTML = site.addons.map(a => `<label class="check"><input type="checkbox" value="${a.id}">${esc(a.name)}<small>+${money(a.price_cents)}</small></label>`).join("");
+  if (!site.addons.length) $("#b-add-wrap").hidden = true;
+  $$("select[data-k]").forEach(el => el.onchange = () => setEst({[el.dataset.k]: +el.value}));
+  $$("#b-cond input").forEach(el => el.onchange = () => setEst({condition: +el.value}));
+  $$("#b-freq input").forEach(el => el.onchange = () => setEst({frequency: +el.value}));
+  $$("#b-add input").forEach(el => el.onchange = () => setEst({addon_ids: $$("#b-add input:checked").map(x => +x.value)}));
+  renderGallery("all");
+}
+
+let estTimer;
+function setEst(patch) {
+  Object.assign(est, patch);
+  const p = pkgById(est.package_id);
+  ["#q-pkg", "#b-pkg"].forEach(s => $(s).value = est.package_id);
+  ["#q-size", "#b-size"].forEach(s => $(s).value = est.size);
+  $("#q-cond").value = est.condition; $("#q-freq").value = est.frequency;
+  $$("#b-cond input").forEach(i => i.checked = +i.value === est.condition);
+  $$("#b-freq input").forEach(i => i.checked = +i.value === est.frequency);
+  $$("#b-add input").forEach(i => i.checked = est.addon_ids.includes(+i.value));
+  $("#q-freq-wrap").style.visibility = p && p.recurring ? "visible" : "hidden";
+  $("#b-freq-wrap").hidden = !(p && p.recurring);
+  clearTimeout(estTimer);
+  estTimer = setTimeout(async () => {
+    const r = await fetch("/api/estimate", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(est)});
+    if (!r.ok) return;
+    lastEst = await r.json();
+    $$("[data-est]").forEach(e => e.textContent = lastEst.custom ? "Custom quote" : `${money(lastEst.low)}–${money(lastEst.high)}`);
+    $$("[data-est-unit]").forEach(e => e.textContent = lastEst.custom ? "We'll give you a free quote" : lastEst.recurring ? "per visit" : "one-time");
+    $("#b-first").textContent = lastEst.first_visit_note || "";
+  }, 120);
+}
+
+function renderGallery(filter) {
+  const used = new Set(site.media.map(m => m.package_id).filter(Boolean));
+  const pk = site.packages.filter(p => used.has(p.id));
+  $("#chips").innerHTML = pk.length > 1 ? [`<button class="chip ${filter === "all" ? "on" : ""}" data-f="all">All</button>`]
+    .concat(pk.map(p => `<button class="chip ${filter == p.id ? "on" : ""}" data-f="${p.id}">${esc(p.name)}</button>`)).join("") : "";
+  $$("[data-f]").forEach(b => b.onclick = () => renderGallery(b.dataset.f));
+  const items = site.media.filter(m => filter === "all" || m.package_id == filter).slice(0, 12);
+  $("#gallery").innerHTML = items.map(m => {
+    const el = m.kind === "photo" && m.after_url ? `<div class="pair" style="display:grid;grid-template-columns:1fr 1fr;gap:3px;position:relative"><img class="m" src="${esc(m.url)}" alt="Before: ${esc(m.title)}" loading="lazy" data-zoom><img class="m" src="${esc(m.after_url)}" alt="After: ${esc(m.title)}" loading="lazy" data-zoom><span class="ba-tag b">Before</span><span class="ba-tag a">After</span></div>`
+      : m.kind === "photo" ? `<img class="m" src="${esc(m.url)}" alt="${esc(m.title)}" loading="lazy" data-zoom>`
+      : m.kind === "video" ? `<video class="m" src="${esc(m.url)}#t=0.5" controls playsinline preload="metadata"></video>`
+      : `<iframe class="m" src="${esc(m.url)}" title="${esc(m.title || "Video")}" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+    return `<figure class="tile" style="margin:0">${el}${m.title || m.package_id ? `<figcaption class="cap">${esc(m.title)}<small>${esc((pkgById(m.package_id) || {}).name || "")}</small></figcaption>` : ""}</figure>`;
+  }).join("") || `<div class="empty">Photos and videos of our latest jobs are coming soon.</div>`;
+  $$("[data-zoom]").forEach(i => i.onclick = () => { $("#lightbox img").src = i.src; $("#lightbox").style.display = "flex"; });
+}
+$("#lightbox").onclick = () => $("#lightbox").style.display = "none";
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("#lightbox").style.display = "none"; });
+
+function renderCal() {
+  const byDate = Object.fromEntries(days.map(d => [d.date, d]));
+  const lead = (new Date(view.y, view.m, 1).getDay() + 6) % 7;
+  const total = new Date(view.y, view.m + 1, 0).getDate();
+  $("#month").textContent = `${MONTHS[view.m]} ${view.y}`;
+  let h = ["Mo","Tu","We","Th","Fr","Sa","Su"].map(d => `<div class="dow">${d}</div>`).join("") + "<div></div>".repeat(lead);
+  for (let d = 1; d <= total; d++) {
+    const k = `${view.y}-${String(view.m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const info = byDate[k], open = info && info.open;
+    const title = info ? (open ? `${info.remaining} spot${info.remaining > 1 ? "s" : ""} left` : info.reason) : "Unavailable";
+    h += `<button type="button" class="day ${open ? "open" : ""} ${selected === k ? "sel" : ""}" ${open ? `data-d="${k}"` : "disabled"} aria-label="${esc(MONTHS[view.m] + " " + d + ": " + title)}" title="${esc(title + (info && info.note ? " · " + info.note : ""))}">${d}${open && info.remaining === 1 ? `<span class="dot"></span>` : ""}</button>`;
+  }
+  $("#cal").innerHTML = h;
+  $$("[data-d]").forEach(b => b.onclick = () => { selected = b.dataset.d; renderCal(); showPicked(); });
+  const months = days.map(d => d.date.slice(0, 7)), cur = `${view.y}-${String(view.m + 1).padStart(2, "0")}`;
+  $("#prev").disabled = cur <= months[0]; $("#next").disabled = cur >= months[months.length - 1];
+}
+function showPicked() {
+  const d = new Date(selected + "T12:00:00");
+  $("#picked").textContent = "📅 " + d.toLocaleDateString("en-US", {weekday: "long", month: "long", day: "numeric"});
+}
+$("#prev").onclick = () => { view.m--; if (view.m < 0) { view.m = 11; view.y--; } renderCal(); };
+$("#next").onclick = () => { view.m++; if (view.m > 11) { view.m = 0; view.y++; } renderCal(); };
+
+async function checkZip(z, out) {
+  if (!z || z.length < 5) { out.innerHTML = ""; return; }
+  const r = await (await fetch("/api/zip/" + encodeURIComponent(z))).json();
+  if (!r.checked) { out.innerHTML = ""; return; }
+  out.innerHTML = r.served ? `<div class="note-ok">✓ Yes, we work in ${esc(z)}.</div>` : `<div class="note-warn">${esc(z)} is outside our usual area. Book anyway and we'll let you know if we can make it (a travel fee may apply).</div>`;
+}
+$("#zipbtn").onclick = () => checkZip($("#zipcheck").value.trim(), $("#zipresult"));
+$("#zipcheck").onkeydown = e => { if (e.key === "Enter") $("#zipbtn").click(); };
+$("#f-zip").onblur = () => checkZip($("#f-zip").value.trim(), $("#zipnote"));
+
+$("#bform").onsubmit = async e => {
+  e.preventDefault();
+  const f = Object.fromEntries(new FormData(e.target)), err = $("#err");
+  if (!selected) { err.textContent = "Please pick an available day on the calendar."; $("#cal").scrollIntoView({behavior: "smooth", block: "center"}); return; }
+  if (!f.name.trim() || !f.phone.trim() || !f.address.trim()) { err.textContent = "Please fill in your name, phone and address."; return; }
+  err.textContent = ""; $("#send").disabled = true; $("#send").textContent = "Sending…";
+  try {
+    const r = await fetch("/api/bookings", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({...est, ...f, date: selected, lang: LANG, source: SOURCE})});
+    const j = await r.json();
+    if (!r.ok) throw new Error(typeof j.detail === "string" ? j.detail : "Please check the form and try again.");
+    const s = site.settings, btns = [];
+    if (j.sms_url) btns.push(`<a class="btn sun block" href="${esc(j.sms_url)}"><svg class="ico"><use href="#i-msg"/></svg>Text Us the Details</a>`);
+    if (j.whatsapp_url) btns.push(`<a class="btn wa block" href="${esc(j.whatsapp_url)}" target="_blank" rel="noopener"><svg class="ico fill"><use href="#i-wa"/></svg>Send on WhatsApp</a>`);
+    if (j.tel_url) btns.push(`<a class="btn line block" href="${esc(j.tel_url)}"><svg class="ico"><use href="#i-phone"/></svg>Call ${esc(s.phone_display)}</a>`);
+    track("Schedule", {content_name: (lastEst && lastEst.package) || ""});
+    $("#form-panel").innerHTML = `<div class="done"><div class="eyebrow">Request received</div><h3 class="cond" style="text-transform:uppercase;margin:6px 0 10px">You're on the schedule!</h3>
+      <p><b>${esc(j.date_text)}</b>${j.estimate_text ? ` · Estimate <b>${esc(j.estimate_text)}</b>` : ""}<br>Confirmation code: <span class="code">${esc(j.id)}</span></p>
+      ${j.zip_ok ? "" : `<p class="note-warn">Your ZIP is outside our usual area. We'll let you know if we can make it.</p>`}
+      <p class="muted">We'll contact you shortly to confirm your appointment and exact price. Want a faster answer? Send us your request now:</p>
+      <div class="btns">${btns.join("")}</div></div>`;
+    $("#form-panel").scrollIntoView({behavior: "smooth", block: "start"});
+    loadDays();
+  } catch (x) { err.textContent = x.message; $("#send").disabled = false; $("#send").textContent = "Request Booking"; loadDays(); }
+};
+
+async function loadDays() {
+  days = await (await fetch("/api/availability?days=60")).json();
+  if (selected && !days.find(d => d.date === selected && d.open)) { selected = null; if ($("#picked")) $("#picked").textContent = "That day just filled up. Please pick another one."; }
+  if (!view) { const f = days.find(d => d.open) || days[0]; const [y, m] = f.date.split("-"); view = {y: +y, m: +m - 1}; }
+  if ($("#cal")) renderCal();
+}
+
+(async () => {
+  site = await loadSite();
+  renderChrome(site, {quoteHref: "#book"});
+  renderStatic();
+  const hl = site.packages.find(p => p.highlight) || site.packages[0];
+  if (hl) setEst({package_id: hl.id});
+  await loadDays();
+})();
+</script>
+</body>
+</html>

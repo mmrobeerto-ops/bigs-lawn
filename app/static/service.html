@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#123d24">
+<script type="application/ld+json">{{JSONLD}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<!--#SPRITE-->
+<!--#TOP-->
+
+<main id="top">
+  <section class="svc-hero" style="padding:0"><div class="bg" id="hero-bg"></div><div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/#services">Services</a><span>/</span><span id="crumb" style="opacity:1;margin:0"></span></nav>
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="h1"></h1>
+    <p class="lead" id="intro"></p>
+    <div class="ctas">
+      <a class="btn sun" href="#quote">Get a free quote →</a>
+      <a class="btn line" data-tel hidden><svg class="ico"><use href="#i-phone"/></svg>Call <span data-s="phone_display"></span></a>
+      <a class="btn line" data-sms hidden><svg class="ico"><use href="#i-msg"/></svg>Text us</a>
+      <a class="btn wa" data-wa hidden target="_blank" rel="noopener"><svg class="ico fill"><use href="#i-wa"/></svg>WhatsApp</a>
+    </div>
+    <div class="rating" id="rating" hidden><span class="stars">★★★★★</span><span data-s="rating_text"></span></div>
+  </div></section>
+
+  <section id="included"><div class="wrap split">
+    <div>
+      <div class="eyebrow">What is included</div>
+      <h2 class="cond" id="inc-h" style="font-size:clamp(40px,5.4vw,64px);text-transform:uppercase;margin:6px 0 18px"></h2>
+      <div id="price-chip"></div>
+      <ul class="checklist" id="inc-list"></ul>
+      <a class="btn dark" style="margin-top:22px" href="#quote" id="price-btn"></a>
+    </div>
+    <div>
+      <div class="video" id="video" hidden></div>
+      <div id="fit" hidden style="margin-top:26px"><h3 class="cond" style="font-size:34px;text-transform:uppercase;margin-bottom:12px">A good fit if</h3><ul class="checklist" id="fit-list"></ul></div>
+    </div>
+  </div></section>
+
+  <section class="alt" id="how" hidden><div class="wrap how">
+    <div class="eyebrow">How we work</div>
+    <h2 class="cond" id="how-h" style="font-size:clamp(40px,5.4vw,64px);text-transform:uppercase;margin:6px 0 4px"></h2>
+    <div id="how-list"></div>
+    <div id="factors-wrap" hidden style="margin-top:44px">
+      <div class="eyebrow">What sets the price</div>
+      <div class="factors" id="factors"></div>
+      <p class="muted" style="margin-top:16px">Estimates are free. We confirm your price before any work starts.</p>
+    </div>
+  </div></section>
+
+  <section id="work-sec" hidden><div class="wrap">
+    <div class="head"><div><div class="eyebrow">Our work</div><h2 id="work-h"></h2></div><p>Real jobs from our crew around <span data-s="city"></span>.</p></div>
+    <div class="ba-grid" id="work"></div>
+  </div></section>
+
+  <section id="reviews" hidden></section>
+
+  <section class="alt" id="faq-sec" hidden><div class="wrap" style="max-width:860px">
+    <div class="eyebrow">FAQ</div>
+    <h2 class="cond" id="faq-h" style="font-size:clamp(40px,5.4vw,64px);text-transform:uppercase;margin:6px 0 18px"></h2>
+    <div id="faq-list"></div>
+  </div></section>
+
+  <section id="related-sec" hidden><div class="wrap">
+    <div class="eyebrow">Pairs well with</div>
+    <h2 class="cond" style="font-size:clamp(40px,5.4vw,64px);text-transform:uppercase;margin:6px 0 22px">Related services</h2>
+    <div class="related" id="related"></div>
+  </div></section>
+
+  <section class="quote-sec" id="quote"><div class="wrap">
+    <div>
+      <div class="eyebrow">Free quote</div>
+      <h2 id="quote-h"></h2>
+      <p class="lead">Tell us what you need and we'll get back to you quickly with a free estimate.</p>
+      <div class="contact-items" id="contact-items"></div>
+      <ul class="ticks" id="ticks"></ul>
+    </div>
+    <div class="qbox" id="qbox"></div>
+  </div></section>
+</main>
+
+<!--#BOTTOM-->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo"><img alt=""></div>
+
+<script src="/assets/site.js"></script>
+<script>
+const ICONS = ["i-mower", "i-rake", "i-tree", "i-sprout"];
+const slug = location.pathname.split("/").filter(Boolean)[1];
+const money = c => "$" + (c % 100 ? (c / 100).toFixed(2) : (c / 100).toLocaleString("en-US"));
+
+function card(m) {
+  if (m.kind === "photo" && m.after_url) {
+    return `<figure class="ba" style="margin:0"><div class="pair"><img src="${esc(m.url)}" alt="Before: ${esc(m.title)}" loading="lazy" data-zoom><img src="${esc(m.after_url)}" alt="After: ${esc(m.title)}" loading="lazy" data-zoom>
+      <span class="tag b">Before</span><span class="tag a">After</span></div>${m.title || m.caption ? `<figcaption class="txt"><b>${esc(m.title)}</b>${m.caption ? `<p>${esc(m.caption)}</p>` : ""}</figcaption>` : ""}</figure>`;
+  }
+  const el = m.kind === "photo" ? `<img class="single" src="${esc(m.url)}" alt="${esc(m.title)}" loading="lazy" data-zoom>`
+    : m.kind === "video" ? `<video class="single" src="${esc(m.url)}#t=0.5" controls playsinline preload="metadata"></video>`
+    : `<iframe class="single" src="${esc(m.url)}" title="${esc(m.title || "Video")}" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+  return `<figure class="ba" style="margin:0">${el}${m.title || m.caption ? `<figcaption class="txt"><b>${esc(m.title)}</b>${m.caption ? `<p>${esc(m.caption)}</p>` : ""}</figcaption>` : ""}</figure>`;
+}
+
+(async () => {
+  const site = await loadSite();
+  renderChrome(site, {quoteHref: "#quote"});
+  const s = site.settings, i = site.packages.findIndex(p => p.slug === slug), p = site.packages[i];
+  if (!p) { location.href = "/#services"; return; }
+  const d = p.details, where = [s.city, s.region].filter(Boolean).join(", "), lower = p.name.toLowerCase();
+  const media = site.media.filter(m => m.package_id === p.id);
+  const cover = media.find(m => m.kind === "photo");
+  const bgUrl = cover ? (cover.after_url || cover.url) : s.hero_url;
+  if (bgUrl) $("#hero-bg").style.backgroundImage = `url("${bgUrl.replace(/"/g, "")}")`;
+
+  $("#crumb").textContent = p.name;
+  $("#eyebrow").textContent = d.eyebrow || p.description;
+  $("#h1").textContent = where ? `${p.name} in ${where}` : p.name;
+  $("#intro").textContent = d.eyebrow ? p.description : (s.about || "");
+  if (s.rating_text) $("#rating").hidden = false;
+
+  $("#inc-h").textContent = p.name;
+  if (p.price_cents) $("#price-chip").innerHTML = `<span class="price-chip">Starting at ${money(p.price_cents)} ${esc(p.price_note.replace(/^from\s*/i, ""))}</span>`;
+  $("#inc-list").innerHTML = p.features.map(f => `<li>${esc(f)}</li>`).join("");
+  $("#price-btn").textContent = `Price my ${lower} →`;
+
+  const vid = d.video_embed ? {kind: "youtube", url: d.video_embed} : media.find(m => m.kind !== "photo");
+  if (vid) { $("#video").hidden = false; if (vid.kind === "video") $("#video").classList.add("tall"); $("#video").innerHTML = vid.kind === "video" ? `<video src="${esc(vid.url)}#t=0.5" controls playsinline preload="metadata"></video>` : `<iframe src="${esc(vid.url)}" title="${esc(p.name)} video" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>`; }
+  if (d.good_fit.length) { $("#fit").hidden = false; $("#fit-list").innerHTML = d.good_fit.map(x => `<li>${esc(x)}</li>`).join(""); }
+
+  if (d.how.length || d.price_factors.length) {
+    $("#how").hidden = false;
+    $("#how-h").textContent = d.how.length ? "What to expect" : "";
+    $("#how-list").innerHTML = d.how.map(h => `<h3 class="cond">${esc(h.title)}</h3><p>${esc(h.text)}</p>`).join("");
+    if (d.price_factors.length) { $("#factors-wrap").hidden = false; $("#factors").innerHTML = d.price_factors.map(f => `<div class="factor"><b>${esc(f.title)}</b><p>${esc(f.text)}</p></div>`).join(""); }
+  }
+
+  const work = media.filter(m => m !== vid);
+  if (work.length) { $("#work-sec").hidden = false; $("#work-h").textContent = `Real ${lower} jobs`; $("#work").innerHTML = work.map(card).join(""); }
+  $$("[data-zoom]").forEach(img => img.onclick = () => { $("#lightbox img").src = img.src; $("#lightbox").style.display = "flex"; });
+  $("#lightbox").onclick = () => $("#lightbox").style.display = "none";
+
+  renderReviews($("#reviews"), site);
+  if (d.faqs.length) { $("#faq-sec").hidden = false; $("#faq-h").textContent = `${p.name} questions`; $("#faq-list").innerHTML = d.faqs.map(f => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join(""); }
+
+  const others = site.packages.filter(x => x.id !== p.id);
+  const rel = others.slice(i % Math.max(others.length, 1)).concat(others).slice(0, 3);
+  if (rel.length) {
+    $("#related-sec").hidden = false;
+    $("#related").innerHTML = rel.map(r => {
+      const ph = site.media.find(m => m.package_id === r.id && m.kind === "photo"), k = site.packages.indexOf(r);
+      return `<a class="rel" href="${svcUrl(r)}"><div class="img" ${ph ? `style="background-image:url('${esc(ph.after_url || ph.url)}')"` : ""}>${ph ? "" : `<svg class="ico"><use href="#${ICONS[k % ICONS.length]}"/></svg>`}</div>
+        <div class="txt"><b>${esc(r.name)}</b><p>${esc(r.description)}</p><span class="more">See what is included →</span></div></a>`;
+    }).join("");
+  }
+
+  $("#quote-h").textContent = `Get your ${lower} price.`;
+  const ci = [];
+  if (s.phone_display) ci.push(`<a href="${esc(s.tel_link)}"><span class="ic"><svg class="ico"><use href="#i-phone"/></svg></span><span><b>Call or text ${esc(s.phone_display)}</b><small>${esc(s.hours_text)}</small></span></a>`);
+  if (s.email) ci.push(`<a href="mailto:${esc(s.email)}"><span class="ic"><svg class="ico"><use href="#i-mail"/></svg></span><span><b>Email us</b><small>${esc(s.email)}</small></span></a>`);
+  $("#contact-items").innerHTML = ci.join("");
+  $("#ticks").innerHTML = s.trust_badges.map(b => `<li>${esc(b)}</li>`).join("");
+  renderQuoteForm($("#qbox"), site, {preselect: [p.name], page: location.pathname});
+})();
+</script>
+</body>
+</html>

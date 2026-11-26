@@ -1,0 +1,7 @@
+*.db
+*.db-*
+__pycache__/
+.pytest_cache/
+uploads/*
+!uploads/.gitkeep
+deploy/out/

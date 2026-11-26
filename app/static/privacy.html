@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<meta name="robots" content="noindex">
+<script type="application/ld+json">{{JSONLD}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<!--#SPRITE-->
+<!--#TOP-->
+<main><section><div class="wrap" style="max-width:780px">
+  <div class="eyebrow">Legal</div>
+  <h1 class="cond" style="font-size:clamp(44px,6vw,64px);text-transform:uppercase;margin:6px 0 20px">Privacy Policy</h1>
+  <p><b data-s="business_name"></b> respects your privacy. This page explains what we collect when you use this website and how we use it.</p>
+  <h2 class="cond" style="font-size:30px;text-transform:uppercase;margin-top:28px">What we collect</h2>
+  <p>When you request a quote or book a service, we collect the information you type in: your name, phone number, email (optional), address or city, the services you need and any notes about your property.</p>
+  <h2 class="cond" style="font-size:30px;text-transform:uppercase;margin-top:28px">How we use it</h2>
+  <p>Only to reply to your request, give you an estimate, schedule and confirm your service, and contact you about that job. We do not sell or rent your information, and we do not send marketing messages unless you ask us to.</p>
+  <h2 class="cond" style="font-size:30px;text-transform:uppercase;margin-top:28px">Text messages and calls</h2>
+  <p>If you choose text, call or WhatsApp as your preferred contact, we'll use that number to reach you about your request. Reply STOP to any text message and we won't text you again.</p>
+  <div id="pixel-note" hidden><h2 class="cond" style="font-size:30px;text-transform:uppercase;margin-top:28px">Advertising measurement</h2>
+  <p>This site uses the Meta Pixel to measure how well our Facebook and Instagram ads work (for example, whether someone who saw an ad later asked for a quote). Meta may use cookies for this. You can control ad preferences in your Facebook or Instagram settings.</p></div>
+  <h2 class="cond" style="font-size:30px;text-transform:uppercase;margin-top:28px">Your choices</h2>
+  <p>You can ask us to update or delete your information at any time. Contact us at <span id="pcontact"></span>.</p>
+  <p class="muted" style="margin-top:28px">Last updated: <span id="pdate"></span></p>
+</div></section></main>
+<!--#BOTTOM-->
+<script src="/assets/site.js"></script>
+<script>
+(async () => {
+  const site = await loadSite();
+  renderChrome(site, {quoteHref: "/#book"});
+  const s = site.settings;
+  $("#pcontact").innerHTML = [s.phone_display && `<a href="${esc(s.tel_link)}">${esc(s.phone_display)}</a>`, s.email && `<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`].filter(Boolean).join(" or ") || "the phone number on this site";
+  $("#pdate").textContent = "November 2026";
+  if (s.meta_pixel_id) $("#pixel-note").hidden = false;
+})();
+</script>
+</body>
+</html>

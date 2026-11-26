@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin · Lawn Care</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ea;--card:#fffdf7;--ink:#121a14;--muted:#5a6359;--line:#e2dccb;--forest:#123d24;--leaf:#3f8f4f;--sun:#f4c430;--soft:#ebf1e2;--amber:#b45309;--bad:#b42318;--blue:#2563eb}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1410;--card:#151d17;--ink:#eef2ea;--muted:#a3ae9f;--line:#29352b;--forest:#2f7d4a;--leaf:#5fb36f;--soft:#1a271d;--amber:#e9a23b;--bad:#f0766a;--blue:#6b9cff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif}
+.cond{font-family:"Barlow Condensed",Inter,sans-serif;text-transform:uppercase}
+.bar{background:#121a14;color:#fff}.bar .in{max-width:1140px;margin:0 auto;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.bar h1{margin:0;font-size:26px}.bar h1 .dot{color:var(--sun)}
+main{max-width:1140px;margin:0 auto;padding:16px 16px 60px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi b{display:block;font:800 30px "Barlow Condensed"}.muted{color:var(--muted);font-size:13px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;border-radius:8px;font-weight:600;cursor:pointer;white-space:nowrap}
+.tab.on{background:var(--forest);border-color:var(--forest);color:#fff}
+button,.b{font:600 13px Inter;padding:8px 11px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.b.wa{background:#1faa52;border-color:#1faa52;color:#fff}.b.sun{background:var(--sun);border-color:var(--sun);color:#2a2200}
+button.primary{background:var(--forest);border-color:var(--forest);color:#fff}button.danger{color:var(--bad)}
+.bar button,.bar .b{background:transparent;color:#fff;border-color:#3a443c}
+.list{display:grid;gap:10px}.bk h3{margin:0;font-size:16px}.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2px 16px;margin-top:6px;font-size:14px}
+.st{font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+.st.pending{background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber)}
+.st.confirmed{background:color-mix(in srgb,var(--blue) 16%,transparent);color:var(--blue)}
+.st.done{background:var(--soft);color:var(--leaf)}.st.cancelled{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+.est{font:800 22px "Barlow Condensed";color:var(--leaf)}
+.dayh{font:800 22px "Barlow Condensed";text-transform:uppercase;margin:14px 0 2px}
+label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px;font-weight:600}
+input,select,textarea{font:15px Inter;padding:9px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+textarea{min-height:70px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}.inline{flex-direction:row;align-items:center;gap:6px}.inline input{width:auto}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.cal .dow{font-size:12px;color:var(--muted);text-align:center;font-weight:700}
+.cd{border:1px solid var(--line);border-radius:8px;padding:6px;min-height:64px;background:var(--card);cursor:pointer;font-size:12px;text-align:left;display:block}
+.cd b{font-size:14px}.cd.closed{background:var(--bg);color:var(--muted)}.cd.full{border-color:var(--amber);border-width:2px}.cd.ov{outline:2px dashed var(--blue)}
+.media{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}.media .m{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:7px;border:0;background:#000}
+table.mult{width:100%;border-collapse:collapse}table.mult td{padding:4px}table.mult td:last-child{width:110px}
+h2.sec{font:800 24px "Barlow Condensed";text-transform:uppercase;margin:4px 0 10px}
+#login{max-width:360px;margin:15vh auto}.hidden{display:none}
+</style>
+</head>
+<body>
+<div id="login" class="card hidden"><h1 class="cond" style="margin:0 0 6px">Sign in · Iniciar sesión</h1>
+  <form id="lform">
+    <label for="lu">Username · Usuario<input id="lu" name="username" autocomplete="username" autocapitalize="none" required></label>
+    <label for="lp" style="margin-top:10px">Password · Contraseña<input id="lp" name="password" type="password" autocomplete="current-password" required></label>
+    <button class="primary" style="margin-top:14px;width:100%;justify-content:center">Sign in · Entrar</button>
+    <p class="muted" id="lerr" role="alert" style="color:var(--bad)"></p>
+  </form></div>
+<div id="app" class="hidden">
+  <div class="bar"><div class="in"><h1 class="cond"><span class="dot">●</span> <span id="bname"></span></h1><div class="row"><a class="b" href="/" target="_blank">View site</a><button id="logout">Sign out</button></div></div></div>
+  <main>
+    <div class="kpis" id="kpis"></div>
+    <div class="tabs" id="tabs"></div>
+    <div id="view"></div>
+  </main>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = c => c == null ? "" : "$" + (c / 100).toLocaleString("en-US", {maximumFractionDigits: 2});
+const ST = {pending: "Pending", confirmed: "Confirmed", done: "Completed", cancelled: "Cancelled"};
+let tab = "visits", settings = {};
+
+async function api(url, opts = {}) {
+  const h = {};
+  if (opts.body && !(opts.body instanceof FormData)) h["Content-Type"] = "application/json";
+  const r = await fetch(url, {...opts, headers: h, credentials: "same-origin"});
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { showLogin(); throw new Error("Please sign in"); }
+  if (!r.ok) throw new Error(typeof j.detail === "string" ? j.detail : "Please check the details");
+  return j;
+}
+function showLogin() { $("#app").classList.add("hidden"); $("#login").classList.remove("hidden"); }
+$("#logout").onclick = async () => { await fetch("/api/admin/logout", {method: "POST", credentials: "same-origin"}); showLogin(); };
+$("#lform").onsubmit = async e => {
+  e.preventDefault(); $("#lerr").textContent = "";
+  const r = await fetch("/api/admin/login", {method: "POST", credentials: "same-origin", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({username: $("#lu").value, password: $("#lp").value})});
+  if (!r.ok) { const j = await r.json().catch(() => ({})); $("#lerr").textContent = j.detail || "Wrong username or password"; return; }
+  $("#lp").value = ""; start();
+};
+
+const TABS = {visits: "📈 Visitors", quotes: "📨 Quote requests", bookings: "📋 Bookings", days: "📅 Availability", packages: "💲 Services", addons: "➕ Add-ons", estimator: "🧮 Estimator",
+  media: "🎬 Photos & videos", testimonials: "⭐ Reviews", faqs: "❓ FAQ", settings: "⚙️ Business info"};
+function renderTabs() {
+  $("#tabs").innerHTML = Object.entries(TABS).map(([k, v]) => `<button class="tab ${tab === k ? "on" : ""}" data-t="${k}">${v}</button>`).join("");
+  $$("[data-t]").forEach(b => b.onclick = () => { tab = b.dataset.t; renderTabs(); show(); });
+}
+async function kpis() {
+  const s = await api("/api/admin/summary");
+  $("#kpis").innerHTML = [["Visitors today", s.visitors_today], ["New quote requests", s.new_quotes], ["Bookings to confirm", s.pending], ["Jobs today", s.today], ["Next 7 days", s.week], ["Booked pipeline", money(s.pipeline_cents)],
+    ["Recurring leads", s.recurring_leads], ["Completed this month", s.done_month], ["Earned this month", money(s.revenue_month_cents)]]
+    .map(k => `<div class="card kpi"><span class="muted">${k[0]}</span><b>${k[1]}</b></div>`).join("");
+}
+async function show() {
+  const v = $("#view");
+  try { await VIEWS[tab](v); } catch (e) { v.innerHTML = `<div class="card">${esc(e.message)}</div>`; }
+}
+
+// ---------------------------------------------------------------- bookings
+let bfilter = "upcoming";
+async function bookings(v) {
+  const q = bfilter === "upcoming" ? "?upcoming=true" : bfilter === "all" ? "" : `?status=${bfilter}`;
+  const list = (await api("/api/admin/bookings" + q)).filter(b => bfilter !== "upcoming" || b.status !== "cancelled");
+  let last = "", html = `<div class="row" style="margin-bottom:8px">${[["upcoming", "Upcoming"], ["pending", "Pending"], ["confirmed", "Confirmed"], ["done", "Completed"], ["cancelled", "Cancelled"], ["all", "All"]]
+    .map(([k, l]) => `<button class="${bfilter === k ? "primary" : ""}" data-bf="${k}">${l}</button>`).join("")}</div><div class="list">`;
+  for (const b of list) {
+    if (bfilter === "upcoming" && b.date !== last) { html += `<div class="dayh">${esc(b.date_text)}</div>`; last = b.date; }
+    const estTxt = b.estimate_low != null ? `${money(b.estimate_low)}–${money(b.estimate_high)}` : (b.package_name ? "Custom quote" : "");
+    html += `<div class="card bk">
+      <div class="row" style="justify-content:space-between;align-items:center"><h3>${esc(b.name)} <span class="st ${b.status}">${ST[b.status]}</span></h3>
+        <div>${b.price_cents != null ? `<span class="est">${money(b.price_cents)}</span> <span class="muted">agreed</span>` : estTxt ? `<span class="est">${esc(estTxt)}</span> <span class="muted">estimate</span>` : ""}</div></div>
+      <div class="muted">${esc(b.id)} · ${esc(b.date_text)} · prefers <b>${esc(b.contact_text)}</b> · from <b>${esc(b.source || "Direct")}</b></div>
+      <div class="meta">
+        <div>🧰 ${esc(b.package_name || "Service not chosen")}${b.frequency ? ` · <b>${esc(b.frequency)}</b>` : ""}</div>
+        ${b.size ? `<div>📐 ${esc(b.size)}</div>` : ""}${b.condition ? `<div>🌿 ${esc(b.condition)}</div>` : ""}
+        ${b.addons ? `<div>➕ ${esc(b.addons)}</div>` : ""}
+        <div>📍 ${esc(b.address)} ${esc(b.zip)} · <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.address + " " + b.zip)}" target="_blank" rel="noopener">Map</a></div>
+        <div>📞 ${esc(b.phone)}${b.email ? ` · <a href="mailto:${esc(b.email)}">${esc(b.email)}</a>` : ""}</div>
+      </div>
+      ${b.notes ? `<div class="muted" style="margin-top:6px">“${esc(b.notes)}”</div>` : ""}${b.admin_note ? `<div class="muted">Internal note: ${esc(b.admin_note)}</div>` : ""}
+      <div class="acts">
+        <a class="b sun" href="${esc(b.sms_client)}">💬 Text</a><a class="b" href="${esc(b.tel_client)}">📞 Call</a>
+        <a class="b wa" href="${esc(b.wa_client)}" target="_blank" rel="noopener">WhatsApp</a>
+        ${b.status !== "confirmed" && b.status !== "done" ? `<button data-act="confirmed" data-id="${b.id}">✔ Confirm</button>` : ""}
+        ${b.status !== "done" && b.status !== "cancelled" ? `<button data-act="done" data-id="${b.id}">✅ Completed</button>` : ""}
+        ${b.status === "done" && b.review_client ? `<a class="b" href="${esc(b.review_client)}">⭐ Ask for review</a>` : ""}
+        <button data-act="price" data-id="${b.id}">💲 Price</button><button data-act="date" data-id="${b.id}">📅 Change day</button>
+        <button data-act="note" data-id="${b.id}">📝 Note</button>
+        ${b.status !== "cancelled" ? `<button class="danger" data-act="cancelled" data-id="${b.id}">Cancel</button>` : ""}
+      </div></div>`;
+  }
+  v.innerHTML = html + (list.length ? "" : `<div class="card muted">No bookings here.</div>`) + "</div>";
+  $$("[data-bf]").forEach(b => b.onclick = () => { bfilter = b.dataset.bf; show(); });
+  $$("[data-act]").forEach(b => b.onclick = async () => {
+    const id = b.dataset.id, a = b.dataset.act, cur = list.find(x => x.id === id);
+    let body;
+    if (a === "price") { const p = prompt("Agreed price (e.g. 45 or 45.50)", cur.price_cents != null ? cur.price_cents / 100 : ""); if (p === null) return; body = {price_cents: Math.round(parseFloat(p) * 100)}; if (isNaN(body.price_cents)) return alert("Invalid number"); }
+    else if (a === "date") { const d = prompt("New date (YYYY-MM-DD)", cur.date); if (!d) return; body = {date: d}; }
+    else if (a === "note") { const n = prompt("Internal note", cur.admin_note); if (n === null) return; body = {admin_note: n}; }
+    else { if (a === "cancelled" && !confirm("Cancel this booking? The spot will open up again.")) return; body = {status: a}; }
+    try {
+      const r = await api(`/api/admin/bookings/${id}`, {method: "PATCH", body: JSON.stringify(body)});
+      kpis(); await show();
+      if (["confirmed", "cancelled", "done"].includes(a) && confirm("Message the customer now?")) {
+        if (r.contact_pref === "whatsapp") window.open(r.wa_client, "_blank"); else location.href = r.sms_client;
+      }
+    } catch (e) { alert(e.message); }
+  });
+}
+
+// ---------------------------------------------------------------- visitors
+let vdays = 30;
+async function visits(v) {
+  const r = await api(`/api/admin/visits?days=${vdays}`);
+  const max = Math.max(1, ...r.per_day.map(d => d.n));
+  const list = (rows, key, label) => rows.length ? rows.map(x => `<div class="row" style="justify-content:space-between;border-bottom:1px dashed var(--line);padding:6px 0"><span>${esc(label(x[key]))}</span><b>${x.n}</b></div>`).join("") : `<p class="muted">No data yet.</p>`;
+  v.innerHTML = `<div class="row" style="margin-bottom:10px">${[7, 30, 90].map(d => `<button class="${vdays === d ? "primary" : ""}" data-vd="${d}">Last ${d} days</button>`).join("")}</div>
+    <div class="kpis">${[["Visitors today", r.visitors_today], ["Last 7 days", r.visitors_7], [`Visitors (${r.days} days)`, r.visitors], ["Pages viewed", r.views],
+      ["Quotes + bookings", r.leads], ["Visitors who asked", r.conversion_pct + "%"]].map(k => `<div class="card kpi"><span class="muted">${k[0]}</span><b>${k[1]}</b></div>`).join("")}</div>
+    <div class="card" style="margin-bottom:10px"><h2 class="sec">Visitors per day</h2>
+      <div style="display:flex;align-items:flex-end;gap:2px;height:140px">${r.per_day.map(d => `<div title="${d.day}: ${d.n}" style="flex:1;background:var(--leaf);border-radius:3px 3px 0 0;min-height:2px;height:${d.n / max * 100}%"></div>`).join("")}</div>
+      <div class="row muted" style="justify-content:space-between;margin-top:4px"><span>${r.per_day[0].day}</span><span>${r.per_day[r.per_day.length - 1].day}</span></div></div>
+    <div class="grid">
+      <div class="card"><h2 class="sec">Where they came from</h2>${list(r.sources, "source", x => x || "Direct")}</div>
+      <div class="card"><h2 class="sec">Most visited pages</h2>${list(r.pages, "path", x => x === "/" ? "Home page" : x.replace(/^\/services\//, "Service: ").replace(/\/$/, ""))}</div>
+      <div class="card"><h2 class="sec">Device</h2>${list(r.devices, "device", x => x === "mobile" ? "📱 Phone" : "💻 Computer")}</div></div>
+    <p class="muted">Counts real visitors only (bots are ignored). No cookies or personal data are stored. A visitor is counted once per day per browser.</p>`;
+  $$("[data-vd]").forEach(b => b.onclick = () => { vdays = +b.dataset.vd; show(); });
+}
+
+// ---------------------------------------------------------------- quote requests
+const QS = {new: "New", contacted: "Contacted", won: "Won", lost: "Lost"};
+let qfilter = "";
+async function quotes(v) {
+  const list = await api("/api/admin/quotes" + (qfilter ? `?status=${qfilter}` : ""));
+  const bySrc = {};
+  list.forEach(q => { const k = q.source || "Direct"; bySrc[k] = bySrc[k] || {n: 0, won: 0}; bySrc[k].n++; if (q.status === "won") bySrc[k].won++; });
+  const srcRows = Object.entries(bySrc).sort((a, b) => b[1].n - a[1].n);
+  v.innerHTML = (srcRows.length ? `<div class="card" style="margin-bottom:10px"><h2 class="sec">Where your leads come from</h2>
+    ${srcRows.map(([k, x]) => `<div class="row" style="justify-content:space-between;border-bottom:1px dashed var(--line);padding:6px 0"><span>${esc(k)}</span><span><b>${x.n}</b> request${x.n > 1 ? "s" : ""}${x.won ? ` · ${x.won} won` : ""}</span></div>`).join("")}
+    <p class="muted" style="margin-bottom:0">Tip: on ads and flyers use links like bigslawn.com/?utm_source=flyer so each lead shows where it came from.</p></div>` : "")
+    + `<div class="row" style="margin-bottom:8px">${[["", "All"], ["new", "New"], ["contacted", "Contacted"], ["won", "Won"], ["lost", "Lost"]]
+    .map(([k, l]) => `<button class="${qfilter === k ? "primary" : ""}" data-qf="${k}">${l}</button>`).join("")}</div>
+    <div class="list">${list.map(q => `<div class="card">
+      <div class="row" style="justify-content:space-between;align-items:center"><h3 style="margin:0;font-size:16px">${esc(q.name)} <span class="st ${q.status === "new" ? "pending" : q.status === "won" ? "done" : q.status === "lost" ? "cancelled" : "confirmed"}">${QS[q.status]}</span></h3>
+        <span class="muted">${esc(q.id)} · ${new Date(q.created * 1000).toLocaleString("en-US", {month: "short", day: "numeric", hour: "numeric", minute: "2-digit"})}</span></div>
+      <div class="meta"><div>🧰 ${esc(q.services || "Not specified")}</div>${q.city ? `<div>📍 ${esc(q.city)}</div>` : ""}
+        <div>📞 ${esc(q.phone)} · prefers <b>${esc(q.contact_text)}</b></div>${q.email ? `<div>✉️ <a href="mailto:${esc(q.email)}">${esc(q.email)}</a></div>` : ""}
+        <div>📣 Came from: <b>${esc(q.source || "Direct")}</b></div>${q.page ? `<div class="muted">Page: ${esc(q.page)}</div>` : ""}</div>
+      ${q.notes ? `<div class="muted" style="margin-top:6px">“${esc(q.notes)}”</div>` : ""}${q.admin_note ? `<div class="muted">Internal note: ${esc(q.admin_note)}</div>` : ""}
+      <div class="acts"><a class="b sun" href="${esc(q.sms_client)}">💬 Text</a><a class="b" href="${esc(q.tel_client)}">📞 Call</a><a class="b wa" href="${esc(q.wa_client)}" target="_blank" rel="noopener">WhatsApp</a>
+        ${Object.entries(QS).filter(([k]) => k !== q.status).map(([k, l]) => `<button data-qs="${k}" data-id="${q.id}">Mark ${l.toLowerCase()}</button>`).join("")}
+        <button data-qn="${q.id}">📝 Note</button></div></div>`).join("") || `<div class="card muted">No quote requests yet.</div>`}</div>`;
+  $$("[data-qf]").forEach(b => b.onclick = () => { qfilter = b.dataset.qf; show(); });
+  $$("[data-qs]").forEach(b => b.onclick = async () => { await api(`/api/admin/quotes/${b.dataset.id}`, {method: "PATCH", body: JSON.stringify({status: b.dataset.qs})}); kpis(); show(); });
+  $$("[data-qn]").forEach(b => b.onclick = async () => { const cur = list.find(x => x.id === b.dataset.qn); const n = prompt("Internal note", cur.admin_note); if (n === null) return;
+    await api(`/api/admin/quotes/${b.dataset.qn}`, {method: "PATCH", body: JSON.stringify({admin_note: n})}); show(); });
+}
+
+// ---------------------------------------------------------------- availability
+const daysText = w => ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].filter((_, i) => (w || "").includes(i)).join(", ") || "no days";
+async function days(v) {
+  const list = await api("/api/admin/days?days=63");
+  const lead = (new Date(list[0].date + "T12:00:00").getDay() + 6) % 7;
+  v.innerHTML = `<div class="card"><p class="muted" style="margin-top:0">Tap a day to close it (holiday, rain, vacation) or change how many jobs you take. Regular schedule from <b>Business info</b>: ${esc(daysText(settings.work_days))}, ${esc(settings.daily_capacity)} jobs/day.</p>
+    <div class="cal">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => `<div class="dow">${d}</div>`).join("")}${"<div></div>".repeat(lead)}
+    ${list.map((d, i) => { const dt = new Date(d.date + "T12:00:00"); return `<button class="cd ${d.capacity === 0 ? "closed" : d.booked >= d.capacity ? "full" : ""} ${d.note ? "ov" : ""}" data-day="${d.date}" data-cap="${d.capacity}" data-note="${esc(d.note)}">
+      <b>${dt.getDate()}</b> ${dt.getDate() === 1 || i === 0 ? dt.toLocaleDateString("en-US", {month: "short"}) : ""}<br>${d.capacity === 0 ? "Closed" : `${d.booked}/${d.capacity}`}${d.note ? `<br>${esc(d.note)}` : ""}</button>`; }).join("")}</div>
+    <p class="muted">Dashed = custom day · Orange = fully booked.</p></div>`;
+  $$("[data-day]").forEach(b => b.onclick = async () => {
+    const c = prompt(`${b.dataset.day}\nHow many jobs will you take that day?\n0 = closed · leave empty to go back to normal`, b.dataset.cap);
+    if (c === null) return;
+    try {
+      if (c.trim() === "") await api(`/api/admin/days/${b.dataset.day}`, {method: "DELETE"});
+      else { const n = prompt("Note (optional, e.g. Holiday)", b.dataset.note) ?? ""; await api(`/api/admin/days/${b.dataset.day}`, {method: "PUT", body: JSON.stringify({capacity: +c, note: n})}); }
+      show();
+    } catch (e) { alert(e.message); }
+  });
+}
+
+// ---------------------------------------------------------------- services
+const dt = p => Object.assign({eyebrow: "", video_url: "", good_fit: [], how: [], price_factors: [], faqs: []}, p.details || {});
+const lines = t => (t || "").split("\n").map(x => x.trim()).filter(Boolean);
+const pairs = t => lines(t).map(l => { const i = l.indexOf("|"); return i < 0 ? [l, ""] : [l.slice(0, i).trim(), l.slice(i + 1).trim()]; });
+async function packages(v) {
+  const pkgs = await api("/api/admin/packages");
+  const form = p => `<form class="card pf" data-id="${p.id || ""}"><div class="grid">
+      <label>Name<input name="name" value="${esc(p.name || "")}" required></label>
+      <label>Starting price ($, 0 = free quote)<input name="price" type="number" min="0" step="0.01" value="${p.price_cents != null ? p.price_cents / 100 : ""}"></label>
+      <label>Price label<input name="price_note" value="${esc(p.price_note || "")}" placeholder="from / visit · from"></label>
+      <label>Order<input name="sort" type="number" value="${p.sort || 0}"></label></div>
+      <label style="margin-top:8px">Description<input name="description" value="${esc(p.description || "")}"></label>
+      <label style="margin-top:8px">What's included (one per line)<textarea name="features">${esc((p.features || []).join("\n"))}</textarea></label>
+      <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">Service page content ${p.slug ? `· <a href="/services/${esc(p.slug)}/" target="_blank">view page ↗</a>` : ""}</summary>
+        <div class="grid" style="margin-top:8px">
+          <label>Short headline above the title<input name="eyebrow" value="${esc(dt(p).eyebrow)}" placeholder="One visit. Whole yard. Hauled away."></label>
+          <label>YouTube video link (optional)<input name="video_url" value="${esc(dt(p).video_url)}"></label></div>
+        <label style="margin-top:8px">“A good fit if” (one per line)<textarea name="good_fit">${esc(dt(p).good_fit.join("\n"))}</textarea></label>
+        <label style="margin-top:8px">How we work — one per line: Title | text<textarea name="how">${esc(dt(p).how.map(x => x.title + " | " + x.text).join("\n"))}</textarea></label>
+        <label style="margin-top:8px">What sets the price — one per line: Title | text<textarea name="price_factors">${esc(dt(p).price_factors.map(x => x.title + " | " + x.text).join("\n"))}</textarea></label>
+        <label style="margin-top:8px">Questions — one per line: Question | Answer<textarea name="faqs">${esc(dt(p).faqs.map(x => x.q + " | " + x.a).join("\n"))}</textarea></label>
+      </details>
+      <div class="row" style="margin-top:8px"><label class="inline"><input type="checkbox" name="recurring" ${p.recurring ? "checked" : ""}> Offer weekly / bi-weekly / monthly plans</label>
+      <label class="inline"><input type="checkbox" name="highlight" ${p.highlight ? "checked" : ""}> “Most popular”</label>
+      <label class="inline"><input type="checkbox" name="active" ${p.active !== false ? "checked" : ""}> Show on website</label></div>
+      <div class="row" style="margin-top:10px"><button class="primary">${p.id ? "Save" : "Add service"}</button>${p.id ? `<button type="button" class="danger" data-del="${p.id}">Delete</button>` : ""}</div></form>`;
+  v.innerHTML = `<p class="muted">Starting price = a standard 1/4-acre, well-maintained lot (the weekly price for recurring services). The estimator scales it by lot size, condition and frequency.</p>
+    <div class="list">${pkgs.map(form).join("")}<h2 class="sec">New service</h2>${form({})}</div>`;
+  $$(".pf").forEach(f => f.onsubmit = async e => {
+    e.preventDefault(); const d = new FormData(f);
+    const body = {name: d.get("name"), description: d.get("description"), price_cents: Math.round((+d.get("price") || 0) * 100), price_note: d.get("price_note"),
+      sort: +d.get("sort") || 0, features: d.get("features").split("\n").map(s => s.trim()).filter(Boolean),
+      highlight: d.get("highlight") === "on", recurring: d.get("recurring") === "on", active: d.get("active") === "on",
+      details: {eyebrow: d.get("eyebrow"), video_url: d.get("video_url"), good_fit: lines(d.get("good_fit")),
+        how: pairs(d.get("how")).map(([title, text]) => ({title, text})), price_factors: pairs(d.get("price_factors")).map(([title, text]) => ({title, text})),
+        faqs: pairs(d.get("faqs")).map(([q, a]) => ({q, a}))}};
+    try { await api(f.dataset.id ? `/api/admin/packages/${f.dataset.id}` : "/api/admin/packages", {method: f.dataset.id ? "PUT" : "POST", body: JSON.stringify(body)}); show(); } catch (er) { alert(er.message); }
+  });
+  $$("[data-del]").forEach(b => b.onclick = async () => { if (confirm("Delete this service?")) { await api(`/api/admin/packages/${b.dataset.del}`, {method: "DELETE"}); show(); } });
+}
+
+// ---------------------------------------------------------------- add-ons, reseñas, FAQ
+function simpleView(kind, title, fields, hint = "") {
+  return async v => {
+    const rows = await api(`/api/admin/${kind}`);
+    const input = (f, r) => f.type === "textarea" ? `<label style="grid-column:1/-1">${f.label}<textarea name="${f.k}">${esc(r[f.k] ?? "")}</textarea></label>`
+      : f.type === "money" ? `<label>${f.label}<input name="${f.k}" type="number" min="0" step="0.01" value="${r[f.k] != null ? r[f.k] / 100 : ""}"></label>`
+      : f.type === "rating" ? `<label>${f.label}<select name="${f.k}">${[5, 4, 3, 2, 1].map(n => `<option ${(+r[f.k] || 5) === n ? "selected" : ""}>${n}</option>`).join("")}</select></label>`
+      : `<label>${f.label}<input name="${f.k}" ${f.type === "number" ? 'type="number"' : ""} value="${esc(r[f.k] ?? (f.type === "number" ? 0 : ""))}"></label>`;
+    const form = r => `<form class="card sf" data-id="${r.id || ""}"><div class="grid">${fields.map(f => input(f, r)).join("")}</div>
+      <div class="row" style="margin-top:10px"><label class="inline"><input type="checkbox" name="active" ${r.active !== false ? "checked" : ""}> Show on website</label>
+      <button class="primary">${r.id ? "Save" : "Add"}</button>${r.id ? `<button type="button" class="danger" data-dels="${r.id}">Delete</button>` : ""}</div></form>`;
+    v.innerHTML = `${hint ? `<p class="muted">${hint}</p>` : ""}<div class="list">${rows.map(form).join("")}<h2 class="sec">Add ${title}</h2>${form({})}</div>`;
+    $$(".sf").forEach(f => f.onsubmit = async e => {
+      e.preventDefault(); const d = new FormData(f), body = {active: d.get("active") === "on"};
+      for (const x of fields) body[x.k] = x.type === "money" ? Math.round((+d.get(x.k) || 0) * 100) : (x.type === "number" || x.type === "rating") ? +d.get(x.k) : d.get(x.k);
+      try { await api(f.dataset.id ? `/api/admin/${kind}/${f.dataset.id}` : `/api/admin/${kind}`, {method: f.dataset.id ? "PUT" : "POST", body: JSON.stringify(body)}); show(); } catch (er) { alert(er.message); }
+    });
+    $$("[data-dels]").forEach(b => b.onclick = async () => { if (confirm("Delete?")) { await api(`/api/admin/${kind}/${b.dataset.dels}`, {method: "DELETE"}); show(); } });
+  };
+}
+
+// ---------------------------------------------------------------- estimator
+async function estimator(v) {
+  settings = await api("/api/admin/settings");
+  const tbl = (k, title, help) => { const rows = JSON.parse(settings[k]);
+    return `<div class="card"><h2 class="sec">${title}</h2><p class="muted">${help}</p><table class="mult" data-tbl="${k}">${rows.map(r => `<tr><td><input data-l value="${esc(r.label)}" aria-label="Label"></td><td><input data-m type="number" step="0.05" min="0" value="${r.mult ?? ""}" placeholder="custom" aria-label="Multiplier"></td></tr>`).join("")}
+      <tr><td><input data-l placeholder="+ new option" aria-label="New label"></td><td><input data-m type="number" step="0.05" min="0" aria-label="New multiplier"></td></tr></table></div>`; };
+  v.innerHTML = `<p class="muted">Estimate = starting price × lot size × condition × frequency, plus add-ons, shown as a ± range. Leave a multiplier empty for “custom quote”. Clear a label to remove a row.</p>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+      ${tbl("est_sizes", "Lot sizes", "1.0 = standard 1/4 acre.")}
+      ${tbl("est_conditions", "Condition", "1.0 = well maintained.")}
+      ${tbl("est_frequencies", "Frequency (recurring services)", "1.0 = weekly price.")}
+      <div class="card"><h2 class="sec">Range</h2><label>Show ± this % around the estimate<input id="rng" type="number" min="0" max="50" value="${esc(settings.est_range_pct)}"></label></div>
+    </div><button class="primary" id="saveest" style="margin-top:12px">Save estimator</button> <span class="muted" id="saved"></span>`;
+  $("#saveest").onclick = async () => {
+    const body = {est_range_pct: $("#rng").value};
+    $$("[data-tbl]").forEach(t => body[t.dataset.tbl] = [...t.querySelectorAll("tr")].map(tr => ({label: tr.querySelector("[data-l]").value.trim(), mult: tr.querySelector("[data-m]").value})).filter(r => r.label));
+    try { settings = await api("/api/admin/settings", {method: "PUT", body: JSON.stringify(body)}); await show(); $("#saved").textContent = "✓ Saved"; } catch (e) { alert(e.message); }
+  };
+}
+
+// ---------------------------------------------------------------- media
+async function media(v) {
+  const [site, all] = await Promise.all([fetch("/api/site").then(r => r.json()), api("/api/admin/packages")]);
+  const opts = sel => `<option value="">No service</option>` + all.map(p => `<option value="${p.id}" ${sel === p.id ? "selected" : ""}>${esc(p.name)}</option>`).join("");
+  v.innerHTML = `<form class="card" id="up"><h2 class="sec">Upload work</h2>
+      <div class="grid"><label>Photo or video (mp4, mov, jpg, png)<input type="file" name="file" accept="image/*,video/mp4,video/webm,video/quicktime"></label>
+      <label>…or YouTube link<input name="youtube_url" placeholder="https://youtube.com/shorts/..."></label>
+      <label>“After” photo (optional — shows a before/after card)<input type="file" name="after_file" accept="image/*"></label>
+      <label>Title<input name="title" placeholder="Front bed rebuilt"></label>
+      <label>Short description<input name="caption" placeholder="Weeds pulled, fresh bark dust, clean edges."></label>
+      <label>Service<select name="package_id">${opts(null)}</select></label></div>
+      <div class="row" style="margin-top:10px"><label class="inline"><input type="checkbox" name="featured" value="true"> Show first</label>
+      <button class="primary" id="upb">Upload</button><span class="muted" id="upmsg"></span></div>
+      <p class="muted">Tip: before & after photos of the same yard sell the best. Long videos load faster from YouTube.</p></form>
+    <div class="media" style="margin-top:12px">${site.media.map(m => `<div class="card">
+      ${m.kind === "photo" && m.after_url ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px"><img class="m" src="${esc(m.url)}" alt="Before"><img class="m" src="${esc(m.after_url)}" alt="After"></div>`
+        : m.kind === "photo" ? `<img class="m" src="${esc(m.url)}" alt="">` : m.kind === "video" ? `<video class="m" src="${esc(m.url)}#t=0.5" controls preload="metadata"></video>` : `<iframe class="m" src="${esc(m.url)}" title="video"></iframe>`}
+      <input data-title="${m.id}" value="${esc(m.title)}" placeholder="Title" style="margin-top:6px" aria-label="Title">
+      <input data-cap="${m.id}" value="${esc(m.caption)}" placeholder="Short description" style="margin-top:6px" aria-label="Description">
+      <select data-pkg="${m.id}" style="margin-top:6px" aria-label="Service">${opts(m.package_id)}</select>
+      <div class="row" style="margin-top:6px"><button data-feat="${m.id}" data-v="${m.featured ? 0 : 1}">${m.featured ? "★ Featured" : "☆ Feature"}</button><button class="danger" data-delm="${m.id}">Delete</button></div></div>`).join("") || `<div class="card muted">No work uploaded yet. Add your first before & after!</div>`}</div>`;
+  $("#up").onsubmit = async e => {
+    e.preventDefault(); const fd = new FormData(e.target);
+    if (!fd.get("file")?.size) fd.delete("file");
+    if (!fd.get("after_file")?.size) fd.delete("after_file");
+    $("#upb").disabled = true; $("#upmsg").textContent = "Uploading…";
+    try { await api("/api/admin/media", {method: "POST", body: fd}); show(); } catch (er) { alert(er.message); $("#upb").disabled = false; $("#upmsg").textContent = ""; }
+  };
+  const patch = (id, body) => api(`/api/admin/media/${id}`, {method: "PATCH", body: JSON.stringify(body)});
+  $$("[data-title]").forEach(i => i.onchange = () => patch(i.dataset.title, {title: i.value}));
+  $$("[data-cap]").forEach(i => i.onchange = () => patch(i.dataset.cap, {caption: i.value}));
+  $$("[data-pkg]").forEach(s => s.onchange = () => patch(s.dataset.pkg, {package_id: s.value ? +s.value : null}));
+  $$("[data-feat]").forEach(b => b.onclick = async () => { await patch(b.dataset.feat, {featured: b.dataset.v === "1"}); show(); });
+  $$("[data-delm]").forEach(b => b.onclick = async () => { if (confirm("Delete?")) { await api(`/api/admin/media/${b.dataset.delm}`, {method: "DELETE"}); show(); } });
+}
+
+// ---------------------------------------------------------------- settings
+async function settingsView(v) {
+  settings = await api("/api/admin/settings");
+  const F = [["business_name", "Business name"], ["tagline", "Headline (last 2 words are highlighted)"], ["phone_display", "Business phone — used for Call & Text buttons"],
+    ["whatsapp", "WhatsApp number (optional)"], ["email", "Email"], ["seo_services", "Main services for Google (e.g. Lawn Care & Landscaping)"], ["city", "City (for Google & page title)"], ["region", "State (e.g. OR)"], ["zone", "Service area text"], ["zip_codes", "ZIP codes you serve (comma separated)"],
+    ["hours_text", "Business hours"], ["top_bar_text", "Top bar text (e.g. Free estimates.)"],
+    ["area_cities", "Service area cities (separate with |)"], ["owner_name", "Owner name (About section)"],
+    ["rating_text", "Rating line — only if real (e.g. 4.9 stars from 40+ Google reviews)"],
+    ["google_rating", "Google rating (e.g. 4.9) — empty = average of your reviews"], ["google_review_count", "Number of Google reviews — empty = reviews on this site"],
+    ["google_maps_url", "Google Maps link to your business (Read them on Google)"],
+    ["legal_name", "Legal business name (footer)"], ["license_text", "License / CCB number — only if real"],
+    ["meta_pixel_id", "Meta Pixel ID (Facebook/Instagram ads) — only numbers, empty = off"],
+    ["about_values", "About us cards (separate with |)"], ["promo_text", "Promo banner (leave empty to hide)"], ["trust_badges", "Trust badges (separate with |)"],
+    ["payments_text", "Payment methods"], ["google_review_url", "Google review link"], ["facebook", "Facebook link"], ["instagram", "Instagram link"],
+    ["daily_capacity", "Jobs per day"], ["min_notice_days", "Minimum notice (days)"], ["horizon_days", "Book up to X days ahead"], ["currency_symbol", "Currency symbol"]];
+  const dn = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const logo = settings.logo_src ? `/media/${settings.logo_src}` : "", hero = settings.hero_src ? `/media/${settings.hero_src}` : "";
+  v.innerHTML = `<div class="card" style="margin-bottom:10px"><h2 class="sec">Logo</h2><div class="row" style="align-items:center">
+      ${logo ? `<img src="${esc(logo)}" alt="Logo" style="height:70px;background:#fff;border-radius:6px;padding:4px">` : `<span class="muted">No logo yet — the site shows a leaf icon.</span>`}
+      <label>PNG with transparent background works best<input type="file" id="logofile" accept="image/png,image/jpeg,image/webp"></label>
+      <button class="primary" id="logoup" type="button">Upload logo</button>${logo ? `<button class="danger" id="logodel" type="button">Remove</button>` : ""}</div></div>
+    <div class="card" style="margin-bottom:10px"><h2 class="sec">Homepage background photo</h2><div class="row" style="align-items:center">
+      ${hero ? `<img src="${esc(hero)}" alt="Background" style="height:90px;border-radius:6px">` : `<span class="muted">No photo yet — the homepage uses a plain green background.</span>`}
+      <label>A wide, bright photo of a finished yard works best<input type="file" id="herofile" accept="image/png,image/jpeg,image/webp"></label>
+      <button class="primary" id="heroup" type="button">Upload photo</button>${hero ? `<button class="danger" id="herodel" type="button">Remove</button>` : ""}</div></div>
+    <form class="card" id="sf"><div class="grid">${F.map(([k, l]) => `<label>${l}<input name="${k}" value="${esc(settings[k])}"></label>`).join("")}</div>
+    <label style="margin-top:10px">About us (short)<textarea name="about">${esc(settings.about)}</textarea></label>
+    <label style="margin-top:10px">About us (longer story, optional)<textarea name="about_long">${esc(settings.about_long)}</textarea></label>
+    <label style="margin-top:10px">Spanish translations of your content — JSON {"English text": "texto en español"}<textarea name="content_es" style="min-height:160px;font-family:monospace;font-size:12px">${esc(JSON.stringify(JSON.parse(settings.content_es || "{}"), null, 1))}</textarea></label>
+    <div style="margin-top:10px"><span class="muted">Days you work</span><div class="row">${dn.map((d, i) => `<label class="inline"><input type="checkbox" data-wd="${i}" ${settings.work_days.includes(i) ? "checked" : ""}>${d}</label>`).join("")}</div></div>
+    <p class="muted">Only add a “Licensed & insured” badge if it's true for your business.</p>
+    <button class="primary">Save</button> <span class="muted" id="saved"></span></form>`;
+  $("#logoup").onclick = async () => {
+    const f = $("#logofile").files[0]; if (!f) return alert("Choose an image first");
+    const fd = new FormData(); fd.append("file", f);
+    try { await api("/api/admin/logo", {method: "POST", body: fd}); show(); } catch (e) { alert(e.message); }
+  };
+  $("#heroup").onclick = async () => {
+    const f = $("#herofile").files[0]; if (!f) return alert("Choose a photo first");
+    const fd = new FormData(); fd.append("file", f);
+    try { await api("/api/admin/hero", {method: "POST", body: fd}); show(); } catch (e) { alert(e.message); }
+  };
+  if ($("#herodel")) $("#herodel").onclick = async () => { if (confirm("Remove background photo?")) { await api("/api/admin/hero", {method: "DELETE"}); show(); } };
+  if ($("#logodel")) $("#logodel").onclick = async () => { if (confirm("Remove logo?")) { await api("/api/admin/logo", {method: "DELETE"}); show(); } };
+  $("#sf").onsubmit = async e => {
+    e.preventDefault(); const body = Object.fromEntries(new FormData(e.target));
+    body.work_days = $$("[data-wd]").filter(c => c.checked).map(c => c.dataset.wd).join("");
+    try { settings = await api("/api/admin/settings", {method: "PUT", body: JSON.stringify(body)}); $("#bname").textContent = settings.business_name; $("#saved").textContent = "✓ Saved"; } catch (er) { alert(er.message); }
+  };
+}
+
+const VIEWS = {
+  visits, quotes, bookings, days, packages, estimator, media, settings: settingsView,
+  addons: simpleView("addons", "add-on", [{k: "name", label: "Name"}, {k: "price_cents", label: "Price ($)", type: "money"}, {k: "unit_note", label: "Unit (optional)"}, {k: "sort", label: "Order", type: "number"}]),
+  testimonials: simpleView("testimonials", "review", [{k: "name", label: "Customer name"}, {k: "location", label: "City / neighborhood"}, {k: "rating", label: "Stars", type: "rating"}, {k: "sort", label: "Order", type: "number"}, {k: "text", label: "Review", type: "textarea"}],
+    "Only post real reviews from real customers, with their permission. Tip: copy your best Google reviews here."),
+  faqs: simpleView("faqs", "question", [{k: "question", label: "Question"}, {k: "sort", label: "Order", type: "number"}, {k: "answer", label: "Answer", type: "textarea"}]),
+};
+
+async function start() {
+  try {
+    settings = await api("/api/admin/settings");
+    $("#login").classList.add("hidden"); $("#app").classList.remove("hidden");
+    $("#bname").textContent = settings.business_name;
+    if (!settings.phone_display && !settings.whatsapp) tab = "settings";
+    renderTabs(); kpis(); show();
+  } catch (e) { showLogin(); }
+}
+start();
+</script>
+</body>
+</html>
