@@ -3,10 +3,12 @@
   --bg:#f6f3ea;--paper:#fffdf7;--ink:#121a14;--muted:#5a6359;--line:#e2dccb;
   --forest:#123d24;--forest2:#1d5c36;--leaf:#3f8f4f;--sun:#f4c430;--sun-ink:#2a2200;
   --soft:#ebf1e2;--bad:#b42318;--ok:#1d7a3c;--radius:8px;
+  --night:#121a14; /* fondo oscuro fijo (footer, pasos): no cambia con el modo oscuro */
   --shadow:0 1px 0 rgba(18,26,20,.04),0 12px 32px -16px rgba(18,26,20,.25)}
 @media (prefers-color-scheme:dark){:root{
   --bg:#0e1410;--paper:#151d17;--ink:#eef2ea;--muted:#a3ae9f;--line:#29352b;
   --forest:#0b2716;--forest2:#2f7d4a;--leaf:#5fb36f;--sun:#f4c430;--sun-ink:#221b00;--soft:#1a271d;--bad:#f0766a;--ok:#5fc07f;
+  --night:#080d0a;
   --shadow:0 12px 32px -16px #000}}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:84px}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
@@ -66,7 +68,7 @@ section{padding:84px 0}
 .head h2{font-size:clamp(40px,5.4vw,64px);text-transform:uppercase;font-weight:800;margin-top:6px}
 .head p{max-width:460px;color:var(--muted);margin:0}
 /* pasos */
-.steps{background:var(--ink);color:#f3f1e8;padding:0}
+.steps{background:var(--night);color:#f3f1e8;padding:0}
 .steps .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
 @media(max-width:860px){.steps .wrap{grid-template-columns:1fr 1fr}}
 .step{padding:26px 22px;border-right:1px solid #2c342e}.step:last-child{border:0}
@@ -158,8 +160,8 @@ details[open] summary::after{content:"–"}details p{margin:0;padding:0 18px 16p
 .zipbox{display:flex;gap:8px;margin-top:14px}.zipbox input{max-width:160px}
 .ziplist{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.ziplist span{background:var(--soft);padding:4px 10px;border-radius:4px;font-weight:600;font-size:14px}
 /* footer */
-html{background:var(--ink)}
-footer{background:var(--ink);color:#d9ddd3;padding:56px 0 40px}
+html{background:var(--night)}
+footer{background:var(--night);color:#d9ddd3;padding:56px 0 40px}
 @media(max-width:760px){footer{padding-bottom:110px}}
 footer .wrap{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:28px}@media(max-width:860px){footer .wrap{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){footer .wrap{grid-template-columns:1fr}}
