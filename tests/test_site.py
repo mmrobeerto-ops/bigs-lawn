@@ -260,6 +260,16 @@ def test_hero_background_upload(client):
     assert client.get(u).status_code == 404
 
 
+def test_admin_banner_upload(client):
+    assert client.get("/api/admin/settings", headers=ADMIN).json()["banner_src"] == ""
+    u = client.post("/api/admin/banner", headers=ADMIN, files={"file": ("b.jpg", b"\xff\xd8banner", "image/jpeg")}).json()["banner_url"]
+    assert client.get(u).status_code == 200
+    assert client.get("/api/admin/settings", headers=ADMIN).json()["banner_src"] == u.removeprefix("/media/")
+    assert client.post("/api/admin/banner", files={"file": ("b.jpg", b"\xff\xd8x", "image/jpeg")}).status_code == 401
+    client.delete("/api/admin/banner", headers=ADMIN)
+    assert client.get(u).status_code == 404
+
+
 def test_admin_login_with_username_and_password(client, monkeypatch):
     monkeypatch.setenv("JARDIN_ADMIN_USER", "Martin")
     monkeypatch.setenv("JARDIN_ADMIN_PASSWORD", "green-lawn-2026")

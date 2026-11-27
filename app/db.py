@@ -176,6 +176,7 @@ DEFAULT_SETTINGS = {
     "about_values": "",         # tarjetas de "Sobre nosotros", separadas por |
     "content_es": "{}",        # traducciones al español del contenido del negocio {"texto en inglés": "texto en español"}
     "hero_src": "",            # foto de fondo de la portada
+    "banner_src": "",          # foto de un trabajo para el encabezado del panel de administración
     "logo_src": "",            # archivo del logo en uploads/ (se sube desde el panel)
     "work_days": "012345",
     "daily_capacity": "4",

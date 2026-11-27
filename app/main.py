@@ -892,8 +892,8 @@ def create_app(db_path: str | None = None, upload_dir: Path | None = None) -> Fa
             db.execute(f"UPDATE media SET {', '.join(k + '=?' for k in fields)} WHERE id=?", (*fields.values(), mid))
         return {"ok": True}
 
-    # imágenes del sitio: logo y foto de fondo de la portada
-    SITE_IMAGES = {"logo": ("logo_src", 5), "hero": ("hero_src", 12)}
+    # imágenes del sitio: logo, foto de fondo de la portada y foto del encabezado del panel
+    SITE_IMAGES = {"logo": ("logo_src", 5), "hero": ("hero_src", 12), "banner": ("banner_src", 12)}
 
     async def save_site_image(kind: str, file: UploadFile):
         key, max_mb = SITE_IMAGES[kind]
@@ -934,6 +934,14 @@ def create_app(db_path: str | None = None, upload_dir: Path | None = None) -> Fa
     @app.delete("/api/admin/hero", dependencies=admin)
     def delete_hero():
         return remove_site_image("hero")
+
+    @app.post("/api/admin/banner", dependencies=admin)
+    async def upload_banner(file: UploadFile = File(...)):
+        return await save_site_image("banner", file)
+
+    @app.delete("/api/admin/banner", dependencies=admin)
+    def delete_banner():
+        return remove_site_image("banner")
 
     @app.delete("/api/admin/media/{mid}", dependencies=admin)
     def del_media(mid: int):
@@ -1013,7 +1021,7 @@ def create_app(db_path: str | None = None, upload_dir: Path | None = None) -> Fa
     @app.get("/api/admin/quotes", dependencies=admin)
     def list_quotes(status: str = ""):
         s = db.settings()
-        rows = db.all("SELECT * FROM quotes" + (" WHERE status=?" if status else "") + " ORDER BY created DESC LIMIT 300",
+        rows = db.all("SELECT * FROM quotes" + (" WHERE status=?" if status else "") + " ORDER BY created DESC, rowid DESC LIMIT 300",
                       (status,) if status else ())
         return [decorate_quote(s, r) for r in rows]
 

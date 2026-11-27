@@ -314,6 +314,10 @@ def configure(c, logo=None, photos=None, reviews=False):
         if os.path.exists(hero):
             with open(hero, "rb") as f:
                 c.post("/api/admin/hero", files={"file": ("hero.jpg", f, "image/jpeg")}).raise_for_status()
+        banner = os.path.join(photos, "shrubs-and-lawn.jpg")   # trabajo con los pinos de Oregón de fondo
+        if os.path.exists(banner):
+            with open(banner, "rb") as f:
+                c.post("/api/admin/banner", files={"file": ("banner.jpg", f, "image/jpeg")}).raise_for_status()
 
     if reviews:
         for old in c.get("/api/admin/testimonials").json():

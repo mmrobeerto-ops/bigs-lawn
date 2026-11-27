@@ -9,14 +9,21 @@
 <style>
 :root{--bg:#f6f3ea;--card:#fffdf7;--ink:#121a14;--muted:#5a6359;--line:#e2dccb;--forest:#123d24;--leaf:#3f8f4f;--sun:#f4c430;--soft:#ebf1e2;--amber:#b45309;--bad:#b42318;--blue:#2563eb}
 @media (prefers-color-scheme:dark){:root{--bg:#0e1410;--card:#151d17;--ink:#eef2ea;--muted:#a3ae9f;--line:#29352b;--forest:#2f7d4a;--leaf:#5fb36f;--soft:#1a271d;--amber:#e9a23b;--bad:#f0766a;--blue:#6b9cff}}
+:root{color-scheme:light dark}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif}
 .cond{font-family:"Barlow Condensed",Inter,sans-serif;text-transform:uppercase}
 .bar{background:#121a14;color:#fff}.bar .in{max-width:1140px;margin:0 auto;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .bar h1{margin:0;font-size:26px}.bar h1 .dot{color:var(--sun)}
+.bar.photo{background:linear-gradient(180deg,rgba(10,16,12,.72) 0%,rgba(10,16,12,.25) 55%,rgba(10,16,12,.8) 100%),var(--banner) center 36%/cover no-repeat}
+.bar.photo .in{min-height:170px;align-items:flex-start;padding-top:16px}.bar.photo h1{text-shadow:0 2px 10px rgba(0,0,0,.6)}
+@media(max-width:600px){.bar.photo .in{min-height:120px}}
+.bar.photo .b,.bar.photo button{background:rgba(10,16,12,.55);backdrop-filter:blur(4px)}
 main{max-width:1140px;margin:0 auto;padding:16px 16px 60px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
-.kpi b{display:block;font:800 30px "Barlow Condensed"}.muted{color:var(--muted);font-size:13px}
+.kpi b{display:block;font:800 30px "Barlow Condensed"}
+button.kpi{display:block;text-align:left;font:inherit;width:100%}button.kpi:hover{border-color:var(--leaf)}
+.kpi.alert{border-color:var(--amber);border-width:2px}.kpi.alert b{color:var(--amber)}.kpi .go{font-size:12px;color:var(--leaf);font-weight:700}.muted{color:var(--muted);font-size:13px}
 .tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px}
 .tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;border-radius:8px;font-weight:600;cursor:pointer;white-space:nowrap}
 .tab.on{background:var(--forest);border-color:var(--forest);color:#fff}
@@ -54,7 +61,7 @@ h2.sec{font:800 24px "Barlow Condensed";text-transform:uppercase;margin:4px 0 10
     <p class="muted" id="lerr" role="alert" style="color:var(--bad)"></p>
   </form></div>
 <div id="app" class="hidden">
-  <div class="bar"><div class="in"><h1 class="cond"><span class="dot">●</span> <span id="bname"></span></h1><div class="row"><a class="b" href="/" target="_blank">View site</a><button id="logout">Sign out</button></div></div></div>
+  <div class="bar" id="bar"><div class="in"><h1 class="cond"><span class="dot">●</span> <span id="bname"></span></h1><div class="row"><a class="b" href="/" target="_blank">View site</a><button id="logout">Sign out</button><button id="langbtn" title="Español / English"></button></div></div></div>
   <main>
     <div class="kpis" id="kpis"></div>
     <div class="tabs" id="tabs"></div>
@@ -95,9 +102,17 @@ function renderTabs() {
 }
 async function kpis() {
   const s = await api("/api/admin/summary");
-  $("#kpis").innerHTML = [["Visitors today", s.visitors_today], ["New quote requests", s.new_quotes], ["Bookings to confirm", s.pending], ["Jobs today", s.today], ["Next 7 days", s.week], ["Booked pipeline", money(s.pipeline_cents)],
-    ["Recurring leads", s.recurring_leads], ["Completed this month", s.done_month], ["Earned this month", money(s.revenue_month_cents)]]
-    .map(k => `<div class="card kpi"><span class="muted">${k[0]}</span><b>${k[1]}</b></div>`).join("");
+  // [texto, valor, pestaña y filtro al tocarla, resaltar si hay algo pendiente]
+  const K = [["Visitors today", s.visitors_today, "visits"], ["New quote requests", s.new_quotes, "quotes:new", s.new_quotes > 0],
+    ["Bookings to confirm", s.pending, "bookings:pending", s.pending > 0], ["Jobs today", s.today, "bookings:upcoming"], ["Next 7 days", s.week, "bookings:upcoming"],
+    ["Booked pipeline", money(s.pipeline_cents), "bookings:upcoming"], ["Recurring leads", s.recurring_leads, "bookings:all"],
+    ["Completed this month", s.done_month, "bookings:done"], ["Earned this month", money(s.revenue_month_cents), "bookings:done"]];
+  $("#kpis").innerHTML = K.map(([l, n, go, hot]) => `<button class="card kpi ${hot ? "alert" : ""}" data-go="${go}"><span class="muted">${l}</span><b>${n}</b>${hot ? `<span class="go">View →</span>` : ""}</button>`).join("");
+  $$("[data-go]").forEach(b => b.onclick = () => {
+    const [t, f] = b.dataset.go.split(":");
+    tab = t; if (t === "bookings") bfilter = f; if (t === "quotes") qfilter = f;
+    renderTabs(); show(); $("#tabs").scrollIntoView({behavior: "smooth", block: "start"});
+  });
 }
 async function show() {
   const v = $("#view");
@@ -191,7 +206,7 @@ async function quotes(v) {
     .map(([k, l]) => `<button class="${qfilter === k ? "primary" : ""}" data-qf="${k}">${l}</button>`).join("")}</div>
     <div class="list">${list.map(q => `<div class="card">
       <div class="row" style="justify-content:space-between;align-items:center"><h3 style="margin:0;font-size:16px">${esc(q.name)} <span class="st ${q.status === "new" ? "pending" : q.status === "won" ? "done" : q.status === "lost" ? "cancelled" : "confirmed"}">${QS[q.status]}</span></h3>
-        <span class="muted">${esc(q.id)} · ${new Date(q.created * 1000).toLocaleString("en-US", {month: "short", day: "numeric", hour: "numeric", minute: "2-digit"})}</span></div>
+        <span class="muted">${esc(q.id)} · ${new Date(q.created * 1000).toLocaleString(LOC(), {month: "short", day: "numeric", hour: "numeric", minute: "2-digit"})}</span></div>
       <div class="meta"><div>🧰 ${esc(q.services || "Not specified")}</div>${q.city ? `<div>📍 ${esc(q.city)}</div>` : ""}
         <div>📞 ${esc(q.phone)} · prefers <b>${esc(q.contact_text)}</b></div>${q.email ? `<div>✉️ <a href="mailto:${esc(q.email)}">${esc(q.email)}</a></div>` : ""}
         <div>📣 Came from: <b>${esc(q.source || "Direct")}</b></div>${q.page ? `<div class="muted">Page: ${esc(q.page)}</div>` : ""}</div>
@@ -213,7 +228,7 @@ async function days(v) {
   v.innerHTML = `<div class="card"><p class="muted" style="margin-top:0">Tap a day to close it (holiday, rain, vacation) or change how many jobs you take. Regular schedule from <b>Business info</b>: ${esc(daysText(settings.work_days))}, ${esc(settings.daily_capacity)} jobs/day.</p>
     <div class="cal">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => `<div class="dow">${d}</div>`).join("")}${"<div></div>".repeat(lead)}
     ${list.map((d, i) => { const dt = new Date(d.date + "T12:00:00"); return `<button class="cd ${d.capacity === 0 ? "closed" : d.booked >= d.capacity ? "full" : ""} ${d.note ? "ov" : ""}" data-day="${d.date}" data-cap="${d.capacity}" data-note="${esc(d.note)}">
-      <b>${dt.getDate()}</b> ${dt.getDate() === 1 || i === 0 ? dt.toLocaleDateString("en-US", {month: "short"}) : ""}<br>${d.capacity === 0 ? "Closed" : `${d.booked}/${d.capacity}`}${d.note ? `<br>${esc(d.note)}` : ""}</button>`; }).join("")}</div>
+      <b>${dt.getDate()}</b> ${dt.getDate() === 1 || i === 0 ? dt.toLocaleDateString(LOC(), {month: "short"}) : ""}<br>${d.capacity === 0 ? "Closed" : `${d.booked}/${d.capacity}`}${d.note ? `<br>${esc(d.note)}` : ""}</button>`; }).join("")}</div>
     <p class="muted">Dashed = custom day · Orange = fully booked.</p></div>`;
   $$("[data-day]").forEach(b => b.onclick = async () => {
     const c = prompt(`${b.dataset.day}\nHow many jobs will you take that day?\n0 = closed · leave empty to go back to normal`, b.dataset.cap);
@@ -360,7 +375,8 @@ async function settingsView(v) {
     ["payments_text", "Payment methods"], ["google_review_url", "Google review link"], ["facebook", "Facebook link"], ["instagram", "Instagram link"],
     ["daily_capacity", "Jobs per day"], ["min_notice_days", "Minimum notice (days)"], ["horizon_days", "Book up to X days ahead"], ["currency_symbol", "Currency symbol"]];
   const dn = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-  const logo = settings.logo_src ? `/media/${settings.logo_src}` : "", hero = settings.hero_src ? `/media/${settings.hero_src}` : "";
+  const logo = settings.logo_src ? `/media/${settings.logo_src}` : "", hero = settings.hero_src ? `/media/${settings.hero_src}` : "",
+    banner = settings.banner_src ? `/media/${settings.banner_src}` : "";
   v.innerHTML = `<div class="card" style="margin-bottom:10px"><h2 class="sec">Logo</h2><div class="row" style="align-items:center">
       ${logo ? `<img src="${esc(logo)}" alt="Logo" style="height:70px;background:#fff;border-radius:6px;padding:4px">` : `<span class="muted">No logo yet — the site shows a leaf icon.</span>`}
       <label>PNG with transparent background works best<input type="file" id="logofile" accept="image/png,image/jpeg,image/webp"></label>
@@ -369,6 +385,10 @@ async function settingsView(v) {
       ${hero ? `<img src="${esc(hero)}" alt="Background" style="height:90px;border-radius:6px">` : `<span class="muted">No photo yet — the homepage uses a plain green background.</span>`}
       <label>A wide, bright photo of a finished yard works best<input type="file" id="herofile" accept="image/png,image/jpeg,image/webp"></label>
       <button class="primary" id="heroup" type="button">Upload photo</button>${hero ? `<button class="danger" id="herodel" type="button">Remove</button>` : ""}</div></div>
+    <div class="card" style="margin-bottom:10px"><h2 class="sec">Panel header photo</h2><div class="row" style="align-items:center">
+      ${banner ? `<img src="${esc(banner)}" alt="Panel header" style="height:90px;border-radius:6px">` : `<span class="muted">No photo yet — the panel header is plain.</span>`}
+      <label>A job of yours with the landscape in the background<input type="file" id="bannerfile" accept="image/png,image/jpeg,image/webp"></label>
+      <button class="primary" id="bannerup" type="button">Upload photo</button>${banner ? `<button class="danger" id="bannerdel" type="button">Remove</button>` : ""}</div></div>
     <form class="card" id="sf"><div class="grid">${F.map(([k, l]) => `<label>${l}<input name="${k}" value="${esc(settings[k])}"></label>`).join("")}</div>
     <label style="margin-top:10px">About us (short)<textarea name="about">${esc(settings.about)}</textarea></label>
     <label style="margin-top:10px">About us (longer story, optional)<textarea name="about_long">${esc(settings.about_long)}</textarea></label>
@@ -386,6 +406,12 @@ async function settingsView(v) {
     const fd = new FormData(); fd.append("file", f);
     try { await api("/api/admin/hero", {method: "POST", body: fd}); show(); } catch (e) { alert(e.message); }
   };
+  $("#bannerup").onclick = async () => {
+    const f = $("#bannerfile").files[0]; if (!f) return alert("Choose a photo first");
+    const fd = new FormData(); fd.append("file", f);
+    try { await api("/api/admin/banner", {method: "POST", body: fd}); settings = await api("/api/admin/settings"); setBanner(); show(); } catch (e) { alert(e.message); }
+  };
+  if ($("#bannerdel")) $("#bannerdel").onclick = async () => { if (confirm("Remove panel header photo?")) { await api("/api/admin/banner", {method: "DELETE"}); settings = await api("/api/admin/settings"); setBanner(); show(); } };
   if ($("#herodel")) $("#herodel").onclick = async () => { if (confirm("Remove background photo?")) { await api("/api/admin/hero", {method: "DELETE"}); show(); } };
   if ($("#logodel")) $("#logodel").onclick = async () => { if (confirm("Remove logo?")) { await api("/api/admin/logo", {method: "DELETE"}); show(); } };
   $("#sf").onsubmit = async e => {
@@ -403,11 +429,176 @@ const VIEWS = {
   faqs: simpleView("faqs", "question", [{k: "question", label: "Question"}, {k: "sort", label: "Order", type: "number"}, {k: "answer", label: "Answer", type: "textarea"}]),
 };
 
+// ---------------------------------------------------------------- foto del encabezado
+function setBanner() {
+  const bar = $("#bar");
+  if (settings.banner_src) { bar.style.setProperty("--banner", `url("/media/${encodeURI(settings.banner_src)}")`); bar.classList.add("photo"); }
+  else { bar.style.removeProperty("--banner"); bar.classList.remove("photo"); }
+}
+
+// ---------------------------------------------------------------- idioma del panel (EN / ES)
+// El panel se escribe en inglés; en español se traduce cada texto al mostrarse (y los avisos/preguntas).
+const LANG = localStorage.getItem("adminLang") || ((navigator.language || "").toLowerCase().startsWith("es") ? "es" : "en");
+const LOC = () => LANG === "es" ? "es-US" : "en-US";
+const ES = {
+  "View site": "Ver sitio", "Sign out": "Salir", "View →": "Ver →",
+  // indicadores
+  "Visitors today": "Visitas hoy", "New quote requests": "Cotizaciones nuevas", "Bookings to confirm": "Reservas por confirmar", "Jobs today": "Trabajos hoy",
+  "Next 7 days": "Próximos 7 días", "Booked pipeline": "Dinero agendado", "Recurring leads": "Clientes recurrentes", "Completed this month": "Completados este mes",
+  "Earned this month": "Cobrado este mes",
+  // pestañas
+  "Visitors": "Visitas", "Quote requests": "Cotizaciones", "Bookings": "Reservas", "Availability": "Disponibilidad", "Services": "Servicios", "Add-ons": "Extras",
+  "Estimator": "Estimador", "Photos & videos": "Fotos y videos", "Reviews": "Reseñas", "FAQ": "Preguntas frecuentes", "Business info": "Datos del negocio",
+  // reservas
+  "Upcoming": "Próximas", "Pending": "Pendiente", "Confirmed": "Confirmada", "Completed": "Completada", "Cancelled": "Cancelada", "All": "Todas",
+  "Custom quote": "Cotización a medida", "agreed": "acordado", "estimate": "estimado", "Service not chosen": "Servicio sin elegir", "Map": "Mapa",
+  "Text": "Mensaje", "Call": "Llamar", "Confirm": "Confirmar", "Ask for review": "Pedir reseña", "Price": "Precio", "Change day": "Cambiar día", "Note": "Nota",
+  "Cancel": "Cancelar", "No bookings here.": "No hay reservas aquí.", "from": "vino de", "prefers": "prefiere",
+  "Text message": "Mensaje de texto", "Phone call": "Llamada", "Email": "Correo",
+  "Weekly": "Semanal", "Every 2 weeks": "Cada 2 semanas", "Monthly": "Mensual", "One-time": "Una sola vez",
+  "Agreed price (e.g. 45 or 45.50)": "Precio acordado (ej. 45 o 45.50)", "Invalid number": "Número no válido", "New date (YYYY-MM-DD)": "Nueva fecha (AAAA-MM-DD)",
+  "Internal note": "Nota interna", "Cancel this booking? The spot will open up again.": "¿Cancelar esta reserva? El lugar quedará libre otra vez.",
+  "Message the customer now?": "¿Mandarle mensaje al cliente ahora?",
+  // visitas
+  "Pages viewed": "Páginas vistas", "Quotes + bookings": "Cotizaciones + reservas", "Visitors who asked": "Visitantes que pidieron precio",
+  "Visitors per day": "Visitas por día", "Where they came from": "De dónde llegaron", "Most visited pages": "Páginas más vistas", "Device": "Dispositivo",
+  "Phone": "Teléfono", "Computer": "Computadora", "Direct": "Directo", "Home page": "Página principal", "No data yet.": "Todavía no hay datos.",
+  "Google search / Maps": "Búsqueda de Google / Maps",
+  "Counts real visitors only (bots are ignored). No cookies or personal data are stored. A visitor is counted once per day per browser.":
+    "Solo cuenta visitantes reales (se ignoran los bots). No se guardan cookies ni datos personales. Cada visitante cuenta una vez por día por navegador.",
+  // cotizaciones
+  "Where your leads come from": "De dónde llegan tus clientes", "New": "Nueva", "Contacted": "Contactada", "Won": "Ganada", "Lost": "Perdida",
+  "Not specified": "Sin especificar", "Came from:": "Llegó de:", "No quote requests yet.": "Todavía no hay cotizaciones.",
+  "Tip: on ads and flyers use links like bigslawn.com/?utm_source=flyer so each lead shows where it came from.":
+    "Consejo: en anuncios y volantes usa enlaces como bigslawn.com/?utm_source=flyer para saber de dónde llegó cada cliente.",
+  // disponibilidad
+  "Mon": "Lun", "Tue": "Mar", "Wed": "Mié", "Thu": "Jue", "Fri": "Vie", "Sat": "Sáb", "Sun": "Dom", "Closed": "Cerrado",
+  "Tap a day to close it (holiday, rain, vacation) or change how many jobs you take. Regular schedule from":
+    "Toca un día para cerrarlo (día festivo, lluvia, vacaciones) o cambiar cuántos trabajos aceptas. Horario normal en",
+  "Dashed = custom day · Orange = fully booked.": "Punteado = día cambiado · Naranja = lleno.",
+  "How many jobs will you take that day?": "¿Cuántos trabajos vas a aceptar ese día?",
+  "0 = closed · leave empty to go back to normal": "0 = cerrado · déjalo vacío para volver a lo normal", "Note (optional, e.g. Holiday)": "Nota (opcional, ej. Día festivo)",
+  // servicios
+  "Name": "Nombre", "Starting price ($, 0 = free quote)": "Precio inicial ($, 0 = cotización gratis)", "Price label": "Texto del precio", "Order": "Orden",
+  "Description": "Descripción", "What's included (one per line)": "Qué incluye (uno por línea)", "Service page content": "Contenido de la página del servicio",
+  "view page ↗": "ver página ↗", "Short headline above the title": "Frase corta arriba del título", "YouTube video link (optional)": "Enlace de video de YouTube (opcional)",
+  "“A good fit if” (one per line)": "“Ideal si…” (uno por línea)", "How we work — one per line: Title | text": "Cómo trabajamos — uno por línea: Título | texto",
+  "What sets the price — one per line: Title | text": "Qué define el precio — uno por línea: Título | texto",
+  "Questions — one per line: Question | Answer": "Preguntas — una por línea: Pregunta | Respuesta",
+  "Offer weekly / bi-weekly / monthly plans": "Ofrecer planes semanal / cada 2 semanas / mensual", "“Most popular”": "“Más popular”",
+  "Show on website": "Mostrar en la página", "Save": "Guardar", "Add service": "Agregar servicio", "Delete": "Borrar", "New service": "Servicio nuevo",
+  "Delete this service?": "¿Borrar este servicio?", "Delete?": "¿Borrar?", "Add": "Agregar",
+  "Starting price = a standard 1/4-acre, well-maintained lot (the weekly price for recurring services). The estimator scales it by lot size, condition and frequency.":
+    "Precio inicial = un lote estándar de 1/4 de acre bien cuidado (el precio semanal en servicios recurrentes). El estimador lo ajusta por tamaño, estado y frecuencia.",
+  // extras, reseñas, preguntas
+  "Price ($)": "Precio ($)", "Unit (optional)": "Unidad (opcional)", "Customer name": "Nombre del cliente", "City / neighborhood": "Ciudad / colonia",
+  "Stars": "Estrellas", "Review": "Reseña", "Question": "Pregunta", "Answer": "Respuesta",
+  "Add add-on": "Agregar extra", "Add review": "Agregar reseña", "Add question": "Agregar pregunta",
+  "Only post real reviews from real customers, with their permission. Tip: copy your best Google reviews here.":
+    "Publica solo reseñas reales de clientes reales, con su permiso. Consejo: copia aquí tus mejores reseñas de Google.",
+  // estimador
+  "Estimate = starting price × lot size × condition × frequency, plus add-ons, shown as a ± range. Leave a multiplier empty for “custom quote”. Clear a label to remove a row.":
+    "Estimado = precio inicial × tamaño del lote × estado × frecuencia, más extras, mostrado como rango ±. Deja un multiplicador vacío para “cotización a medida”. Borra un texto para quitar la fila.",
+  "Lot sizes": "Tamaños de lote", "1.0 = standard 1/4 acre.": "1.0 = 1/4 de acre estándar.", "Condition": "Estado", "1.0 = well maintained.": "1.0 = bien cuidado.",
+  "Frequency (recurring services)": "Frecuencia (servicios recurrentes)", "1.0 = weekly price.": "1.0 = precio semanal.", "Range": "Rango",
+  "Show ± this % around the estimate": "Mostrar ± este % alrededor del estimado", "Save estimator": "Guardar estimador", "+ new option": "+ opción nueva",
+  "custom": "a medida", "Label": "Texto", "Multiplier": "Multiplicador",
+  // fotos y videos
+  "Upload work": "Subir trabajo", "Photo or video (mp4, mov, jpg, png)": "Foto o video (mp4, mov, jpg, png)", "…or YouTube link": "…o enlace de YouTube",
+  "“After” photo (optional — shows a before/after card)": "Foto del “después” (opcional — muestra antes y después)", "Title": "Título",
+  "Short description": "Descripción corta", "Service": "Servicio", "No service": "Sin servicio", "Show first": "Mostrar primero", "Upload": "Subir",
+  "Uploading…": "Subiendo…", "Featured": "Destacada", "Feature": "Destacar", "Before": "Antes", "After": "Después",
+  "Tip: before & after photos of the same yard sell the best. Long videos load faster from YouTube.":
+    "Consejo: las fotos de antes y después del mismo jardín son las que más venden. Los videos largos cargan más rápido desde YouTube.",
+  "No work uploaded yet. Add your first before & after!": "Todavía no hay trabajos. ¡Sube tu primer antes y después!",
+  "Front bed rebuilt": "Jardinera del frente renovada", "Weeds pulled, fresh bark dust, clean edges.": "Hierba quitada, corteza nueva, orillas limpias.",
+  // datos del negocio
+  "Logo": "Logo", "No logo yet — the site shows a leaf icon.": "Todavía no hay logo — la página muestra una hoja.",
+  "PNG with transparent background works best": "Funciona mejor un PNG con fondo transparente", "Upload logo": "Subir logo", "Remove": "Quitar",
+  "Homepage background photo": "Foto de fondo de la portada", "No photo yet — the homepage uses a plain green background.": "Todavía no hay foto — la portada usa un fondo verde.",
+  "A wide, bright photo of a finished yard works best": "Funciona mejor una foto ancha y con luz de un jardín terminado", "Upload photo": "Subir foto",
+  "Panel header photo": "Foto del encabezado del panel", "No photo yet — the panel header is plain.": "Todavía no hay foto — el encabezado del panel es liso.",
+  "A job of yours with the landscape in the background": "Un trabajo tuyo con el paisaje de fondo",
+  "Business name": "Nombre del negocio", "Headline (last 2 words are highlighted)": "Título principal (las últimas 2 palabras se resaltan)",
+  "Business phone — used for Call & Text buttons": "Teléfono del negocio — para los botones Llamar y Mensaje", "WhatsApp number (optional)": "Número de WhatsApp (opcional)",
+  "Main services for Google (e.g. Lawn Care & Landscaping)": "Servicios principales para Google (ej. Lawn Care & Landscaping)",
+  "City (for Google & page title)": "Ciudad (para Google y el título de la página)", "State (e.g. OR)": "Estado (ej. OR)", "Service area text": "Texto de la zona de servicio",
+  "ZIP codes you serve (comma separated)": "Códigos ZIP que atiendes (separados por coma)", "Business hours": "Horario", "Top bar text (e.g. Free estimates.)": "Texto de la barra de arriba (ej. Free estimates.)",
+  "Service area cities (separate with |)": "Ciudades de la zona de servicio (separa con |)", "Owner name (About section)": "Nombre del dueño (sección Nosotros)",
+  "Rating line — only if real (e.g. 4.9 stars from 40+ Google reviews)": "Línea de calificación — solo si es real (ej. 4.9 stars from 40+ Google reviews)",
+  "Google rating (e.g. 4.9) — empty = average of your reviews": "Calificación de Google (ej. 4.9) — vacío = promedio de tus reseñas",
+  "Number of Google reviews — empty = reviews on this site": "Número de reseñas de Google — vacío = reseñas de esta página",
+  "Google Maps link to your business (Read them on Google)": "Enlace de Google Maps de tu negocio (Léelas en Google)",
+  "Legal business name (footer)": "Razón social (pie de página)", "License / CCB number — only if real": "Licencia / número CCB — solo si es real",
+  "Meta Pixel ID (Facebook/Instagram ads) — only numbers, empty = off": "ID del Pixel de Meta (anuncios de Facebook/Instagram) — solo números, vacío = apagado",
+  "About us cards (separate with |)": "Tarjetas de Nosotros (separa con |)", "Promo banner (leave empty to hide)": "Banner de promoción (vacío = oculto)",
+  "Trust badges (separate with |)": "Sellos de confianza (separa con |)", "Payment methods": "Formas de pago", "Google review link": "Enlace para reseñas de Google",
+  "Facebook link": "Enlace de Facebook", "Instagram link": "Enlace de Instagram", "Jobs per day": "Trabajos por día", "Minimum notice (days)": "Aviso mínimo (días)",
+  "Book up to X days ahead": "Reservar hasta X días adelante", "Currency symbol": "Símbolo de moneda", "About us (short)": "Nosotros (corto)",
+  "About us (longer story, optional)": "Nosotros (historia larga, opcional)",
+  "Spanish translations of your content — JSON {\"English text\": \"texto en español\"}": "Traducciones al español de tu contenido — JSON {\"English text\": \"texto en español\"}",
+  "Days you work": "Días que trabajas", "Only add a “Licensed & insured” badge if it's true for your business.": "Agrega el sello “Licensed & insured” solo si es cierto para tu negocio.",
+  "✓ Saved": "✓ Guardado", "Choose an image first": "Primero elige una imagen", "Choose a photo first": "Primero elige una foto",
+  "Remove background photo?": "¿Quitar la foto de fondo?", "Remove logo?": "¿Quitar el logo?", "Remove panel header photo?": "¿Quitar la foto del encabezado?",
+  // errores
+  "Please sign in": "Inicia sesión", "Please check the details": "Revisa los datos", "Wrong username or password": "Usuario o contraseña incorrectos",
+};
+const DAYS_EN = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], DAYS_ES = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"];
+const MON_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const MON_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const RE_DATE = new RegExp(`\\b(${DAYS_EN.join("|")}), (${MON_EN.join("|")}) (\\d{1,2})\\b`, "g");
+const esDate = s => s.replace(RE_DATE, (_, d, m, n) => `${DAYS_ES[DAYS_EN.indexOf(d)]} ${n} de ${MON_ES[MON_EN.indexOf(m)]}`);
+// textos que llevan números o datos adentro: [patrón del texto completo, traducción]
+const ES_RX = [
+  [/^Last (\d+) days$/, "Últimos $1 días"], [/^Visitors \((\d+) days\)$/, "Visitas ($1 días)"],
+  [/^Mark (new|contacted|won|lost)$/, (_, s) => "Marcar " + {new: "nueva", contacted: "contactada", won: "ganada", lost: "perdida"}[s]],
+  [/^requests? · (\d+) won$/, (m, n) => (m.startsWith("requests") ? "solicitudes" : "solicitud") + ` · ${n} ganada${n > 1 ? "s" : ""}`],
+  [/^requests?$/, m => m === "requests" ? "solicitudes" : "solicitud"],
+  [/^: (.*), (\d+) jobs\/day\.$/, (_, d, n) => `: ${d.split(", ").map(x => ES[x] || x).join(", ")}, ${n} trabajos/día.`],
+  [/^(.+) · prefers$/, (_, a) => esDate(a) + " · prefiere"], [/^· from$/, "· vino de"],
+  [/^Internal note: /, "Nota interna: "], [/^Page: /, "Página: "], [/^Service: /, "Servicio: "],
+];
+let _ces = null, _cesSrc = null, SITE_ES = {};
+function contentES() {   // traducciones que el dueño ya guardó en "Datos del negocio"
+  if (settings.content_es !== _cesSrc) { _cesSrc = settings.content_es; try { _ces = JSON.parse(_cesSrc || "{}"); } catch { _ces = {}; } }
+  return _ces || {};
+}
+const PRE = /^([\s\p{Extended_Pictographic}️‍★☆✔➕·]*)(.*?)([\s·]*)$/su;
+function tr(s) {
+  if (LANG !== "es" || !s || !/[A-Za-z]/.test(s)) return s;
+  return s.split("\n").map(line => {
+    const [, pre, core, post] = line.match(PRE) || ["", "", line, ""];
+    if (ES[core]) return pre + ES[core] + post;
+    const c = contentES()[core] || SITE_ES[core]; if (c) return pre + c + post;   // contenido del negocio y de la página (servicios, tamaños...)
+    for (const [re, rep] of ES_RX) if (re.test(core)) return pre + core.replace(re, rep) + post;
+    return pre + esDate(core) + post;
+  }).join("\n");
+}
+function translate(root) {
+  if (LANG !== "es") return;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+  for (let n = root; n; n = w.nextNode()) {
+    if (n.nodeType === 3) { const t = tr(n.nodeValue); if (t !== n.nodeValue) n.nodeValue = t; continue; }
+    if (n.nodeType !== 1 || n.matches("script,style,textarea")) continue;
+    for (const a of ["placeholder", "title", "alt", "aria-label"]) if (n.hasAttribute(a)) { const v = n.getAttribute(a), t = tr(v); if (t !== v) n.setAttribute(a, t); }
+  }
+}
+if (LANG === "es") {
+  document.documentElement.lang = "es";
+  for (const f of ["alert", "confirm"]) { const o = window[f].bind(window); window[f] = m => o(tr(m)); }
+  const op = window.prompt.bind(window); window.prompt = (m, d) => op(tr(m), d);
+  translate(document.body);
+  new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => translate(n)))).observe(document.body, {childList: true, subtree: true});
+}
+$("#langbtn").textContent = LANG === "es" ? "EN" : "ES";
+$("#langbtn").onclick = () => { localStorage.setItem("adminLang", LANG === "es" ? "en" : "es"); location.reload(); };
+
 async function start() {
   try {
     settings = await api("/api/admin/settings");
     $("#login").classList.add("hidden"); $("#app").classList.remove("hidden");
-    $("#bname").textContent = settings.business_name;
+    $("#bname").textContent = settings.business_name; setBanner();
+    if (LANG === "es") SITE_ES = await fetch("/assets/i18n/es.json").then(r => r.json()).catch(() => ({}));
     if (!settings.phone_display && !settings.whatsapp) tab = "settings";
     renderTabs(); kpis(); show();
   } catch (e) { showLogin(); }
